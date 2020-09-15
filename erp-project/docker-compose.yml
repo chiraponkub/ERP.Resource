@@ -1,0 +1,16 @@
+﻿# หากต้องการทดสอบ Database ด้วยตัวเองที่เครื่อง
+# ต้องติดตั้ง Docker ก่อนนะจากนั้นเข้ามาที่ Directory ที่ไฟล์นี้อยู่แล้วพิมพ์คำสั่งใน CMD => docker-compose up -d
+version: '3'
+services: 
+    mssql-local:
+        container_name: mssql-local
+        hostname: mssql-local
+        image: mcr.microsoft.com/mssql/server:2019-CU6-ubuntu-16.04
+        ports: 
+            - 1433:1433
+        environment: 
+            ACCEPT_EULA: 'Y'
+            SA_PASSWORD: 'Avesta1234!'
+            MSSQL_PID: Developer
+        volumes: 
+            - ./MsSQLData:/var/opt/mssql

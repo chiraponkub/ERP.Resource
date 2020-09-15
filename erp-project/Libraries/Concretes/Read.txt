@@ -1,0 +1,1 @@
+﻿สำหรบเก็บส่วนของ EF Repository ที่ใช้ร่วมกัน Interface ที่อยู่ใน Abstracts
