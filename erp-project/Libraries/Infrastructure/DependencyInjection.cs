@@ -1,4 +1,6 @@
 ﻿using erp_project.Entities;
+using erp_project.Libraries.Abstracts;
+using erp_project.Libraries.Concretes;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace erp_project.Libraries.Infrastructure
@@ -13,6 +15,7 @@ namespace erp_project.Libraries.Infrastructure
         /// </summary>
         public static void RegisterLibraries(this IServiceCollection service)
         {
+            service.AddTransient<IUpload, EFUpload>();
             service.AddDbContext<DBConnect>();
         }
     }

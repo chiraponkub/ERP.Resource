@@ -36,6 +36,7 @@ namespace erp_project.Entities
             if (!optionsBuilder.IsConfigured)
             {
                 optionsBuilder.UseSqlServer(Configuration.GetConnectionString("ConnectDatabase"));
+                //optionsBuilder.UseSqlServer("Data Source=10.50.41.12;Initial Catalog=erp_dev;Persist Security Info=True;User ID=sa;Password=Addlink123!");
             }
         }
 
