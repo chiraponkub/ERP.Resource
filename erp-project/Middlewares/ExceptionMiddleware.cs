@@ -44,7 +44,7 @@ namespace erp_project.Middlewares
                             var ProxyPath = !string.IsNullOrEmpty(HelperConfig.ProxyPath) ? $"/{HelperConfig.ProxyPath}" : "/";
                             if (Path.Value.StartsWith(ProxyPath) || Path.Value.EndsWith("/"))
                             {
-                                ProxyPath = ProxyPath.Last().Equals("/") ? ProxyPath : ProxyPath + "/";
+                                ProxyPath = ProxyPath.Last().Equals('/') ? ProxyPath : ProxyPath + "/";
                                 httpContext.Response.Redirect($"{ProxyPath}help/index.html");
                             }
                             else
