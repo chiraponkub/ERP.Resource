@@ -8,6 +8,8 @@ using erp_project.Configs;
 using erp_project.Middlewares;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
+using Microsoft.AspNetCore.HttpOverrides;
+using System.Net;
 
 namespace erp_project
 {
@@ -27,6 +29,7 @@ namespace erp_project
             services.AddControllers().AddJsonOptions(m => m.JsonSerializerOptions.PropertyNamingPolicy = null);
             services.AddAuthenticationHelper();
             services.AddSwaggerGenHelper(Configuration);
+            services.Configure<ForwardedHeadersOptions>(options => { options.KnownProxies.Add(IPAddress.Parse("10.0.0.100")); });
             services.Configure<ApiBehaviorOptions>(options =>
             {
                 options.SuppressModelStateInvalidFilter = true;
@@ -49,6 +52,7 @@ namespace erp_project
 
             app.UseMiddleware<ExceptionMiddleware>();
             app.UseRouting();
+            app.UseForwardedHeaders(new ForwardedHeadersOptions { ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto });
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseEndpoints(endpoints =>
