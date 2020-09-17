@@ -39,11 +39,18 @@ namespace erp_project.Middlewares
                     case HttpStatusCode.NotFound:
                         if (_environment.IsDevelopment())
                         {
+                            if (!httpContext.Request.Path.HasValue) return;
                             var Path = httpContext.Request.Path;
                             var ProxyPath = !string.IsNullOrEmpty(HelperConfig.ProxyPath) ? $"/{HelperConfig.ProxyPath}" : "/";
-                            if (Path.StartsWithSegments(ProxyPath))
+                            if (Path.Value.StartsWith(ProxyPath) || Path.Value.EndsWith("/"))
                             {
+                                ProxyPath = ProxyPath.Last().Equals('/') ? ProxyPath : ProxyPath + "/";
                                 httpContext.Response.Redirect($"{ProxyPath}help/index.html");
+                            }
+                            else
+                            {
+                                httpStatusCode = HttpStatusCode.NotFound;
+                                throw new Exception("NotFound");
                             }
                         }
                         break;

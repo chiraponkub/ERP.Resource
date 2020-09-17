@@ -68,7 +68,7 @@ namespace erp_project.Controllers
         /// <summary>
         /// ไอดีผู้ใช้งานที่เข้าสู่ระบบ
         /// </summary>
-        protected int UserLoginId => Convert.ToInt32(User.FindFirstValue(ClaimTypes.Sid));
+        protected string UserLoginId => User.FindFirstValue(ClaimTypes.Sid);
 
         /// <summary>
         /// สิทธิ์ผู้ใช้งานที่เข้าสู่ระบบ
