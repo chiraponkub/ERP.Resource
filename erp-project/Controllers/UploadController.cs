@@ -50,6 +50,7 @@ namespace erp_project.Controllers
         /// <param name="file">ชื่อรูป</param>
         /// <returns></returns>
         [HttpDelete]
+        [RequestSizeLimit(100_000_000)]
         [Route("RemoveImage")]
         public ActionResult RemoveImage(List<string> file)
         {
@@ -74,6 +75,7 @@ namespace erp_project.Controllers
         /// <param name="SetPath">ที่เก็บไฟล์</param>
         /// <returns></returns>
         [HttpPost]
+        [RequestSizeLimit(100_000_000)]
         [Route("Uploadimg")]
         public ActionResult<m_uploadimage> Uploadimage(List<IFormFile> file, string SetPath)
         {

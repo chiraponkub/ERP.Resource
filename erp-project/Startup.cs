@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Linq;
 using Microsoft.AspNetCore.HttpOverrides;
 using System.Net;
+using Microsoft.AspNetCore.Http.Features;
 
 namespace erp_project
 {
@@ -51,7 +52,6 @@ namespace erp_project
                 app.UseDeveloperExceptionPage();
                 app.UseSwaggerHelper();
             }
-
             app.UseMiddleware<ExceptionMiddleware>();
             app.UseRouting();
             app.UseForwardedHeaders(new ForwardedHeadersOptions { ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto });

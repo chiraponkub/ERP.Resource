@@ -25,6 +25,7 @@
 
   <ItemGroup>
     <Folder Include="Entities\Tables\" />
+    <Folder Include="Resources\" />
   </ItemGroup>
 
 </Project>

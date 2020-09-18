@@ -53,7 +53,9 @@ namespace erp_project.Libraries.Concretes
                                 UserId = id,
                                 Path = SetPath,
                                 FullPath = PathToSaveDb,
-                                CreatedAt = DateTime.Now
+                                CreatedAt = DateTime.Now,
+                                NewName = NewName + "." + type[1],
+                                OriginalName = file.FileName
                             };
                             db.Upload.Add(savefiletodata);
                             db.SaveChanges();
@@ -75,7 +77,9 @@ namespace erp_project.Libraries.Concretes
                                 UserId = id,
                                 Path = "",
                                 FullPath = PathToSaveDb,
-                                CreatedAt = DateTime.Now
+                                CreatedAt = DateTime.Now,
+                                NewName = NewName + "." + type[1],
+                                OriginalName = file.FileName
                             };
                             db.Upload.Add(savefiletodata);
                             db.SaveChanges();
@@ -98,7 +102,6 @@ namespace erp_project.Libraries.Concretes
             }
         }
 
-
         public object removeFiles(List<string> files)
         {
             foreach (var file in files)
@@ -119,19 +122,22 @@ namespace erp_project.Libraries.Concretes
             {
                 var DB = db.Upload;
                 var sql = DB.FirstOrDefault(e => e.Name == file);
-                var ss = sql.FullPath.Split("-");
-                var deleteSmall = Path.Combine("Resources" + "/" + "small-" + sql.FullPath);
-                var deleteMediun = Path.Combine("Resources" + "/" + "medium-" + sql.FullPath);
-                var deleteLarge = Path.Combine("Resources" + "/" + "large-" + sql.FullPath);
-                File.Delete(deleteSmall);
-                File.Delete(deleteMediun);
-                File.Delete(deleteLarge);
-                DB.Remove(sql);
-                db.SaveChanges();
+                var Split = sql.NewName.Split("-");
+                var Paths = sql.Path;
+                if (File.Exists(Path.Combine("Resources", sql.FullPath).Replace("\\","/")))
+                {
+                    var deleteSmall = Path.Combine("Resources" + "/" + Paths + "/small-" + Split[1]).Replace("//","/");
+                    var deleteMediun = Path.Combine("Resources" + "/" + Paths + "/medium-" + Split[1]).Replace("//", "/");
+                    var deleteLarge = Path.Combine("Resources" + "/" + Paths + "/large-" + Split[1]).Replace("//", "/");
+                    File.Delete(deleteSmall);
+                    File.Delete(deleteMediun);
+                    File.Delete(deleteLarge);
+                    DB.Remove(sql);
+                    db.SaveChanges();
+                }
             }
             return "Deleted successfully.";
         }
-
 
         public List<m_uploadimage> Uploadimage(List<IFormFile> files, Guid id, string SetPath)
         {
@@ -229,7 +235,9 @@ namespace erp_project.Libraries.Concretes
                             UserId = id,
                             Path = SetPath,
                             FullPath = SaveFullPath,
-                            CreatedAt = DateTime.Now
+                            CreatedAt = DateTime.Now,
+                            NewName  = filenameLarge + "." + Split1[1],
+                            OriginalName = file.FileName
                         };
                         db.Upload.Add(savefiletodata1);
                         db.SaveChanges();
@@ -297,15 +305,17 @@ namespace erp_project.Libraries.Concretes
                         filenameLarge = "large-" + NewName + "." + Split1[1].Replace("\\", "/");
                         folderName = (Path.Combine("Resources")).Replace("\\", "/"); // folder ที่เก็บไฟล์ในโปรเจค 
                         pathToSaveLarge = (Directory.CreateDirectory(folderName) + "\\" + filenameLarge).Replace("\\", "/"); // ที่บันทึกไฟล์ ที่สามารถตั้งค่าได้
-                        
+
                         var savefiletodata = new Upload
                         {
                             Name = NewName,
                             Type = Split,
                             UserId = id,
                             Path = "",
-                            FullPath = filenameLarge,
-                            CreatedAt = DateTime.Now
+                            FullPath =  filenameLarge,
+                            CreatedAt = DateTime.Now,
+                            NewName = filenameLarge,
+                            OriginalName = file.FileName
                         };
                         db.Upload.Add(savefiletodata);
                         db.SaveChanges();
