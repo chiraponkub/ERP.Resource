@@ -15,6 +15,13 @@ namespace erp_project.Library.Concretes
     /// </summary>
     public class HttpApiService : IHttpApiService
     {
+        private Dictionary<string, string> Headers = new Dictionary<string, string>();
+
+        public void Authorization(string authorization)
+        {
+            Headers.Add("Authorization", authorization);
+        }
+
         public async Task<HttpResponse<string>> Get(string url)
         {
             return await Send(url, HttpMethod.Get, null);
@@ -105,6 +112,7 @@ namespace erp_project.Library.Concretes
             {
                 foreach (var header in headers) httpRequest.Headers.Add(header.Key, header.Value);
             }
+            foreach (var header in Headers) httpRequest.Headers.Add(header.Key, header.Value);
             return await Send(httpRequest);
         }
 
@@ -124,6 +132,7 @@ namespace erp_project.Library.Concretes
             {
                 foreach (var header in headers) httpRequest.Headers.Add(header.Key, header.Value);
             }
+            foreach (var header in Headers) httpRequest.Headers.Add(header.Key, header.Value);
             return await Send<T>(httpRequest);
         }
 

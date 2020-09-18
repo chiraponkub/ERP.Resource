@@ -12,6 +12,12 @@ namespace erp_project.Services.Abstracts
     public interface IHttpApiService
     {
         /// <summary>
+        /// เพิ่ม Authrizeation Header เพื่อยืนยันตัวตน
+        /// </summary>
+        /// <param name="authorization">accessToken สำหรับยืนยัน</param>
+        void Authorization(string authorization);
+
+        /// <summary>
         /// สำหรับส่งข้อมูลด้วย Method DELETE
         /// </summary>
         /// <param name="url">URL ที่ต้องการส่งข้อมูล</param>

@@ -73,6 +73,8 @@ namespace erp_project.Middlewares
                 httpContext.Response.StatusCode = (int)httpStatusCode;
                 httpContext.Response.ContentType = "application/json";
                 if (ex.Message.Equals("Unauthorized")) httpContext.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                if (ex.Message.Equals("Forbidden")) httpContext.Response.StatusCode = (int)HttpStatusCode.Forbidden;
+                if (ex.Message.Equals("NotFound")) httpContext.Response.StatusCode = (int)HttpStatusCode.NotFound;
                 await httpContext.Response.WriteAsync(responseMessage);
             }
         }
