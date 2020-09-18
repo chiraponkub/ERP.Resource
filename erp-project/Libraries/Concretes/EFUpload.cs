@@ -105,7 +105,7 @@ namespace erp_project.Libraries.Concretes
             {
                 var DB = db.Upload;
                 var sql = DB.FirstOrDefault(e => e.Name == file);
-                var delete = Path.Combine("Resources" + "\\" + sql.FullPath);
+                var delete = Path.Combine("Resources" + "/" + sql.FullPath);
                 File.Delete(delete);
                 DB.Remove(sql);
                 db.SaveChanges();
@@ -120,9 +120,9 @@ namespace erp_project.Libraries.Concretes
                 var DB = db.Upload;
                 var sql = DB.FirstOrDefault(e => e.Name == file);
                 var ss = sql.FullPath.Split("-");
-                var deleteSmall = Path.Combine("Resources" + "\\" + "small-" + sql.FullPath);
-                var deleteMediun = Path.Combine("Resources" + "\\" + "medium-" + sql.FullPath);
-                var deleteLarge = Path.Combine("Resources" + "\\" + "large-" + sql.FullPath);
+                var deleteSmall = Path.Combine("Resources" + "/" + "small-" + sql.FullPath);
+                var deleteMediun = Path.Combine("Resources" + "/" + "medium-" + sql.FullPath);
+                var deleteLarge = Path.Combine("Resources" + "/" + "large-" + sql.FullPath);
                 File.Delete(deleteSmall);
                 File.Delete(deleteMediun);
                 File.Delete(deleteLarge);
