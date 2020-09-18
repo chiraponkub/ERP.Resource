@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Net.Http.Headers;
 using static erp_project.Libraries.Models.m_Upload;
 
@@ -31,13 +32,16 @@ namespace erp_project.Libraries.Concretes
                     var fileName = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.Trim('"'); // ชื่อไฟล์
                     var NewName = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds().ToString(); // ตั้งชื่อไฟล์ไหม่
                     var Split = file.ContentType; // ดึงค่านามสกุลไฟล์
+                    var type = file.FileName.Split(".");  // ดึงค่านามสกุลไฟล์
                     string folderName;
                     string pathToSave;
+                    string PathToSaveDb;
 
                     if (SetPath != null)
                     {
-                        folderName = (Path.Combine("Resources" , SetPath)).Replace("\\", "/"); // folder ที่เก็บไฟล์ในโปรเจค 
-                        pathToSave = (Directory.CreateDirectory(folderName) + "\\" + NewName).Replace("\\", "/");
+                        folderName = (Path.Combine("Resources", SetPath)).Replace("\\", "/"); // folder ที่เก็บไฟล์ในโปรเจค 
+                        pathToSave = (Directory.CreateDirectory(folderName) + "\\" + NewName + "." + type[1]).Replace("\\", "/");
+                        PathToSaveDb = SetPath + "/"+ NewName + "." + type[1].Replace("\\","/");
                         using (var fileStream = new FileStream(pathToSave, FileMode.Create))
                         {
                             fileStream.Position = 0;
@@ -48,7 +52,7 @@ namespace erp_project.Libraries.Concretes
                                 Type = Split,
                                 UserId = id,
                                 Path = SetPath,
-                                FullPath = pathToSave,
+                                FullPath = PathToSaveDb,
                                 CreatedAt = DateTime.Now
                             };
                             db.Upload.Add(savefiletodata);
@@ -57,8 +61,9 @@ namespace erp_project.Libraries.Concretes
                     }
                     else
                     {
-                        folderName = (Path.Combine("Resources")).Replace("\\","/"); // folder ที่เก็บไฟล์ในโปรเจค 
-                        pathToSave = (Directory.CreateDirectory(folderName) + "\\" + NewName).Replace("\\","/");
+                        folderName = (Path.Combine("Resources")).Replace("\\", "/"); // folder ที่เก็บไฟล์ในโปรเจค 
+                        pathToSave = (Directory.CreateDirectory(folderName) + "\\" + NewName + "." + type[1]).Replace("\\", "/");
+                        PathToSaveDb = NewName + "." + type[1].Replace("\\", "/");
                         using (var fileStream = new FileStream(pathToSave, FileMode.Create))
                         {
                             fileStream.Position = 0;
@@ -69,7 +74,7 @@ namespace erp_project.Libraries.Concretes
                                 Type = Split,
                                 UserId = id,
                                 Path = folderName,
-                                FullPath = pathToSave,
+                                FullPath = PathToSaveDb,
                                 CreatedAt = DateTime.Now
                             };
                             db.Upload.Add(savefiletodata);
@@ -80,7 +85,7 @@ namespace erp_project.Libraries.Concretes
                     {
                         OriginalName = fileName,
                         NewFilename = NewName,
-                        Path = folderName,
+                        Path = "",
                         FullPath = pathToSave,
                         Type = Split
                     });
@@ -93,26 +98,23 @@ namespace erp_project.Libraries.Concretes
             }
         }
 
-        public List<m_removefile> removefiles(List<string> files, Guid id,string Path)
+        public object removefiles(List<string> files)
         {
-            try
+            foreach (var file in files)
             {
-                var res = new List<m_removefile> { };
+                var DB = db.Upload;
+                var sql = DB.FirstOrDefault(e => e.Name == file);
+                //var Split = @sql.FullPath.Split("/");
+                //var sqlit1 = Split[2].Split(".");
+                var ss = Path.Combine(sql.FullPath).Replace("/", "\\");
+                File.Delete(Path.Combine(sql.FullPath).Replace("/", "\\"));
+                DB.Remove(sql);
+                db.SaveChanges();
 
-                res.Add(new m_removefile
-                {
-                    NameFile = "",
-                    Path = "",
-                    FullPath = "",
-                    Type = ""
-                });
-                return res;
             }
-            catch (Exception ex)
-            {
-                throw new  Exception(ex.Message);
-            }
+            return "Deleted the file successfully.";
         }
+
 
 
         public List<m_uploadimage> Uploadimage(List<IFormFile> files, Guid id, string SetPath)
@@ -142,13 +144,13 @@ namespace erp_project.Libraries.Concretes
                     var Split1 = file.ContentType.Split("/"); // ดึงค่านามสกุลไฟล์
                     if (SetPath != null)
                     {
-                        folderName = (Path.Combine("Resources", SetPath)).Replace("\\","/"); // folder ที่เก็บไฟล์ในโปรเจค 
+                        folderName = (Path.Combine("Resources", SetPath)).Replace("\\", "/"); // folder ที่เก็บไฟล์ในโปรเจค 
                         for (int i = 0; i < 3; i++)
                         {
                             filenameSmall = "small-" + NewName;
                             filenameMediun = "medium-" + NewName;
                             filenameLarge = "large-" + NewName;
-                            pathToSaveSmall = (Directory.CreateDirectory(folderName) + "\\" + filenameSmall + "." + Split1[1]).Replace("\\","/"); // ที่บันทึกไฟล์ ที่สามารถตั้งค่าได้
+                            pathToSaveSmall = (Directory.CreateDirectory(folderName) + "\\" + filenameSmall + "." + Split1[1]).Replace("\\", "/"); // ที่บันทึกไฟล์ ที่สามารถตั้งค่าได้
                             pathToSaveMediun = (Directory.CreateDirectory(folderName) + "\\" + filenameMediun + "." + Split1[1]).Replace("\\", "/"); // ที่บันทึกไฟล์ ที่สามารถตั้งค่าได้
                             pathToSaveLarge = (Directory.CreateDirectory(folderName) + "\\" + filenameLarge + "." + Split1[1]).Replace("\\", "/"); // ที่บันทึกไฟล์ ที่สามารถตั้งค่าได้
                             fullPath = folderName + "\\large-" + NewName;
@@ -199,7 +201,7 @@ namespace erp_project.Libraries.Concretes
                             }
                         }
                         filenameLarge = "large-" + NewName;
-                        pathToSaveLarge = (Directory.CreateDirectory(folderName) + "\\" + filenameLarge + "." + Split1[1]).Replace("\\","/"); // ที่บันทึกไฟล์ ที่สามารถตั้งค่าได้
+                        pathToSaveLarge = (Directory.CreateDirectory(folderName) + "\\" + filenameLarge + "." + Split1[1]).Replace("\\", "/"); // ที่บันทึกไฟล์ ที่สามารถตั้งค่าได้
                         var savefiletodata1 = new Upload
                         {
                             Name = NewName,
@@ -272,8 +274,8 @@ namespace erp_project.Libraries.Concretes
                             }
                         }
                         filenameLarge = "large-" + NewName;
-                        folderName = (Path.Combine("Resources")).Replace("\\","/"); // folder ที่เก็บไฟล์ในโปรเจค 
-                        pathToSaveLarge = (Directory.CreateDirectory(folderName) + "\\" + filenameLarge).Replace("\\","/"); // ที่บันทึกไฟล์ ที่สามารถตั้งค่าได้
+                        folderName = (Path.Combine("Resources")).Replace("\\", "/"); // folder ที่เก็บไฟล์ในโปรเจค 
+                        pathToSaveLarge = (Directory.CreateDirectory(folderName) + "\\" + filenameLarge).Replace("\\", "/"); // ที่บันทึกไฟล์ ที่สามารถตั้งค่าได้
                         var savefiletodata = new Upload
                         {
                             Name = NewName,

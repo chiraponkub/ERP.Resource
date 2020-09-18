@@ -21,7 +21,28 @@ namespace erp_project.Controllers
             Upload = _upload;
         }
 
-
+        /// <summary>
+        /// ลบไฟล์
+        /// </summary>
+        /// <param name="file">ชื่อไฟล์</param>
+        /// <returns></returns>
+        [HttpDelete]
+        [Route("RemoveFile")]
+        public ActionResult RemoveFile(List<string> file)
+        {
+            try
+            {
+                if (file == null)
+                {
+                    return BadRequest("File not selected.");
+                }
+                return Ok(Upload.removefiles(file));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
 
         /// <summary>
         /// อัพโหลดไฟล์รูปภาพ

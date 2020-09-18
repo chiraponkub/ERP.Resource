@@ -90,28 +90,5 @@ namespace erp_project.Libraries.Models
             /// </summary>
             public string Type { get; set; }
         }
-
-        public class m_removefile 
-        {
-            /// <summary>
-            /// ชื่อไฟล์
-            /// </summary>
-            public string NameFile { get; set; }
-
-            /// <summary>
-            /// ที่เก็บไฟล์
-            /// </summary>
-            public string Path { get; set; }
-
-            /// <summary>
-            /// ที่เก็บไฟล์พร้อมชื่อไฟล์
-            /// </summary>
-            public string FullPath { get; set; }
-
-            /// <summary>
-            /// ชนิดของไฟล์
-            /// </summary>
-            public string Type { get; set; }
-        }
     }
 }
