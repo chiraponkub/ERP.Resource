@@ -5,10 +5,11 @@ using System.Collections.Generic;
 using Microsoft.Extensions.Configuration;
 using System.Security.Claims;
 using System.Net;
-using System.Net.Http;
 using System.Text.Json;
 using erp_project.Library.Concretes;
 using erp_project.Services.Abstracts;
+using System.Linq;
+using erp_project.Services.Models;
 
 namespace erp_project.Controllers
 {
@@ -55,15 +56,17 @@ namespace erp_project.Controllers
         /// </summary>
         protected T GetUserLogin<T>()
         {
+            HttpService.Authorization(UserAuthorization);
             var authenURL = Configuration.GetValue<string>("ApiUrls:AuthenURL");
-            var authHeaders = new Dictionary<string, string>
-                {
-                    { "Authorization", $"Bearer {JwtService.GenerateJWTAuthentication(UserLoginId.ToString(), UserLoginRole)}" }
-                };
-            var response = HttpService.Send<Dictionary<string, object>>(authenURL, HttpMethod.Get, null, authHeaders).Result;
-            if (response.StatusCode != HttpStatusCode.OK) throw new Exception("Unauthorized");
-            return JsonSerializer.Deserialize<T>(JsonSerializer.Serialize(response.Content["data"]));
+            var response = HttpService.Get<ERPHttpResponse<T>>(authenURL).Result;
+            if (response.StatusCode != HttpStatusCode.OK) throw new Exception(response.StatusCode.ToString());
+            return response.Content.data;
         }
+
+        /// <summary>
+        /// ดึงข้อมูล Authorization ที่ Client ส่งมายืนยันตัวตน
+        /// </summary>
+        protected string UserAuthorization => Request.Headers.Count(m => m.Key.Equals("Authorization")) > 0 ? Request.Headers["Authorization"].ToString() : "";
 
         /// <summary>
         /// ไอดีผู้ใช้งานที่เข้าสู่ระบบ

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using erp_project.Configs;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Configuration;
 
 namespace erp_project.Middlewares
 {
@@ -19,12 +19,12 @@ namespace erp_project.Middlewares
     {
         private readonly RequestDelegate _next;
 
-        private readonly IHostEnvironment _environment;
+        private readonly IConfiguration _configuration;
 
-        public ExceptionMiddleware(RequestDelegate next, IHostEnvironment environment)
+        public ExceptionMiddleware(RequestDelegate next, IConfiguration configuration)
         {
             _next = next;
-            _environment = environment;
+            _configuration = configuration;
         }
 
         public async Task Invoke(HttpContext httpContext)
@@ -37,7 +37,7 @@ namespace erp_project.Middlewares
                 {
                     // หากหาหน้าไม่เจอแล้วอยู่ใน Development Mode จะ Redirect ไปหน้า Swagger help
                     case HttpStatusCode.NotFound:
-                        if (_environment.IsDevelopment())
+                        if (IsDevelopment())
                         {
                             if (!httpContext.Request.Path.HasValue) return;
                             var Path = httpContext.Request.Path;
@@ -68,13 +68,23 @@ namespace erp_project.Middlewares
                 string responseMessage = JsonSerializer.Serialize(new
                 {
                     message = ex.ErrorMessage(),
-                    exception = _environment.IsDevelopment() ? new { ex.Source, ex.StackTrace, } : null
+                    exception = IsDevelopment() ? new { ex.Source, ex.StackTrace, } : null
                 });
                 httpContext.Response.StatusCode = (int)httpStatusCode;
                 httpContext.Response.ContentType = "application/json";
                 if (ex.Message.Equals("Unauthorized")) httpContext.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                if (ex.Message.Equals("Forbidden")) httpContext.Response.StatusCode = (int)HttpStatusCode.Forbidden;
+                if (ex.Message.Equals("NotFound")) httpContext.Response.StatusCode = (int)HttpStatusCode.NotFound;
                 await httpContext.Response.WriteAsync(responseMessage);
             }
+        }
+
+        /// <summary>
+        /// ตรวจสอบ Environment ว่าเป็น Dev หรือไม่
+        /// </summary>
+        private bool IsDevelopment()
+        {
+            return _configuration.GetValue("Environment", "Development").Equals("Development");
         }
     }
 }
