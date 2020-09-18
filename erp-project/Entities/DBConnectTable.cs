@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using erp_project.Entities.Tables;
+using Microsoft.EntityFrameworkCore;
 
 namespace erp_project.Entities
 {
@@ -7,6 +8,6 @@ namespace erp_project.Entities
     /// </summary>
     public partial class DBConnect : DbContext
     {
-
+        public virtual DbSet<Upload> Upload { get; set; }
     }
 }

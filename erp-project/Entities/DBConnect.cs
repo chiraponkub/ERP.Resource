@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using erp_project.Entities.Tables;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
 namespace erp_project.Entities
@@ -24,6 +25,40 @@ namespace erp_project.Entities
         /// <param name="modelBuilder"></param>
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            #region ต่อ DB ครั้งแรก 17/09/2020.
+            modelBuilder.Entity<Upload>(entity =>
+            {
+                entity.HasKey(e => e.Name)
+                    .HasName("PK__tmp_ms_x__72E12F1ACB6FB4F5");
+
+                entity.ToTable("Upload", "Resource");
+
+                entity.Property(e => e.Name)
+                    .HasColumnName("name")
+                    .HasMaxLength(13);
+
+                entity.Property(e => e.CreatedAt)
+                    .HasColumnName("createdAt")
+                    .HasColumnType("datetime");
+
+                entity.Property(e => e.FullPath)
+                    .IsRequired()
+                    .HasColumnName("fullPath")
+                    .HasMaxLength(255)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Path)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.Type)
+                    .IsRequired()
+                    .HasColumnName("type")
+                    .HasMaxLength(30);
+
+                entity.Property(e => e.UserId).HasColumnName("userID");
+            });
+            #endregion 
             OnModelCreatingPartial(modelBuilder);
         }
 
@@ -36,6 +71,7 @@ namespace erp_project.Entities
             if (!optionsBuilder.IsConfigured)
             {
                 optionsBuilder.UseSqlServer(Configuration.GetConnectionString("ConnectDatabase"));
+                //optionsBuilder.UseSqlServer("Data Source=10.50.41.12;Initial Catalog=erp_dev;Persist Security Info=True;User ID=sa;Password=Addlink123!");
             }
         }
 
