@@ -3,7 +3,7 @@
    "ContextNamespace": null,
    "DefaultDacpacSchema": null,
    "FilterSchemas": false,
-   "IncludeConnectionString": true,
+   "IncludeConnectionString": false,
    "ModelNamespace": null,
    "OutputContextPath": null,
    "OutputPath": "Entities\/Tables",
@@ -14,16 +14,12 @@
    "Tables": [
       {
          "HasPrimaryKey": true,
-         "Name": "[Upload].[files]"
-      },
-      {
-         "HasPrimaryKey": true,
-         "Name": "[Upload].[UploadFiles]"
+         "Name": "[Resource].[Upload]"
       }
    ],
    "UseDatabaseNames": false,
    "UseDbContextSplitting": false,
-   "UseFluentApiOnly": false,
+   "UseFluentApiOnly": true,
    "UseHandleBars": false,
    "UseInflector": false,
    "UseLegacyPluralizer": false,

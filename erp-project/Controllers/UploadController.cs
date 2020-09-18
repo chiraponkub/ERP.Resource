@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using erp_project.Libraries.Abstracts;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using static erp_project.Libraries.Models.m_Upload;
@@ -20,38 +21,80 @@ namespace erp_project.Controllers
             Upload = _upload;
         }
 
+
+
         /// <summary>
-        /// อัพโหลดรูปภาพ
+        /// อัพโหลดไฟล์รูปภาพ
         /// </summary>
-        /// <param name="file">ไฟล์ที่อัพรูปภาพ</param>
-        /// <param name="id">ไอดีของผู้อัพรูปภาพ</param>
+        /// <param name="file">ไฟล์รูปภาพที่อัพโหลด</param>
+        /// <param name="SetPath">ที่เก็บไฟล์</param>
         /// <returns></returns>
         [HttpPost]
         [Route("Uploadimg")]
-        public ActionResult<m_uploadimage> Uploadimage(IFormFile file, int id)
+        public ActionResult<m_uploadimage> Uploadimage(List<IFormFile> file, string SetPath)
         {
-            if (file == null)
+            try
             {
-                return BadRequest("The image is not uploaded.");
+                Guid req = Guid.NewGuid();
+                if (SetPath != null && file.Count() == 0)
+                {
+                    return BadRequest("The image is not uploaded.");
+                }
+                if (file.Count() == 0 && SetPath == null)
+                {
+                    return BadRequest("The image is not uploaded.");
+                }
+                if (SetPath == null)
+                {
+                    return Ok(Upload.Uploadimage(file, req, SetPath = null));
+                }
+                else
+                {
+                    return Ok(Upload.Uploadimage(file, req, SetPath));
+                }
             }
-            return Ok(Upload.Uploadimage(file, id));
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
         }
+
 
         /// <summary>
         /// อัพโหลดไฟล์
         /// </summary>
         /// <param name="file">ไฟล์ที่อัพโหลด</param>
-        /// <param name="id">ไอดีของผู้อัพโหลด</param>
+        /// <param name="SetPath">ที่เก็บไฟล์</param>
         /// <returns></returns>
         [HttpPost]
         [Route("Uploadfile")]
-        public ActionResult<m_uploadfile> Uploadfile(IFormFile file, int id)
+        public ActionResult<m_uploadfile> Uploadfile(List<IFormFile> file, string SetPath)
         {
-            if (file == null)
+            try
             {
-                return BadRequest("The file is not upload.");
+                Guid req = Guid.NewGuid();
+                if (SetPath != null && file.Count() == 0)
+                {
+                    return BadRequest("The image is not uploaded.");
+                }
+                if (file.Count() == 0 && SetPath == null)
+                {
+                    return BadRequest("The image is not uploaded.");
+                }
+                if (SetPath == null)
+                {
+                    return Ok(Upload.UploadFile(file, req, SetPath = null));
+                }
+                else
+                {
+                    return Ok(Upload.UploadFile(file, req, SetPath));
+                }
             }
-            return Ok(Upload.UploadFile(file, id));
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
 

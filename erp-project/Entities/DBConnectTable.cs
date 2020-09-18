@@ -8,7 +8,6 @@ namespace erp_project.Entities
     /// </summary>
     public partial class DBConnect : DbContext
     {
-        public virtual DbSet<Files> Files { get; set; }
-        public virtual DbSet<UploadFiles> UploadFiles { get; set; }
+        public virtual DbSet<Upload> Upload { get; set; }
     }
 }
