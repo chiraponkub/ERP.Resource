@@ -22,6 +22,8 @@ namespace erp_project
 
         public IConfiguration Configuration { get; }
 
+        public bool IsDevelopment() { return Configuration.GetValue("Environment", "Development").Equals("Development"); }
+
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddCors();
@@ -36,7 +38,7 @@ namespace erp_project
             });
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app)
         {
             app.UseCors(builder => builder
                .WithOrigins(Configuration.GetValue<string>("ApiUrls:OriginURL", "").Split(",").Select(m => m.Trim()).ToArray())
@@ -44,7 +46,7 @@ namespace erp_project
                .AllowAnyHeader()
                .AllowCredentials());
 
-            if (env.IsDevelopment())
+            if (IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwaggerHelper();
