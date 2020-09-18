@@ -36,7 +36,30 @@ namespace erp_project.Controllers
                 {
                     return BadRequest("File not selected.");
                 }
-                return Ok(Upload.removefiles(file));
+                return Ok(Upload.removeFiles(file));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// ลบรูป
+        /// </summary>
+        /// <param name="file">ชื่อรูป</param>
+        /// <returns></returns>
+        [HttpDelete]
+        [Route("RemoveImage")]
+        public ActionResult RemoveImage(List<string> file)
+        {
+            try
+            {
+                if (file == null)
+                {
+                    return BadRequest("Image not selected.");
+                }
+                return Ok(Upload.removeImage(file));
             }
             catch (Exception ex)
             {

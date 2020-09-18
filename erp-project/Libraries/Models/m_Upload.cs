@@ -17,7 +17,7 @@ namespace erp_project.Libraries.Models
             /// <summary>
             /// ชื่อใหม่ของรูปภาพ
             /// </summary>
-            public string NewImagename { get; set; }
+            public string NewImageName { get; set; }
 
             /// <summary>
             /// ที่เก็บรูปภาพ

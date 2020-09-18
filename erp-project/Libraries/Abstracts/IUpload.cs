@@ -14,7 +14,8 @@ namespace erp_project.Libraries.Abstracts
         List<m_uploadimage> Uploadimage(List<IFormFile> files, Guid id, string SetPath);
 
         //remove
-        object removefiles(List<string> files);
+        object removeFiles(List<string> files);
+        object removeImage(List<string> files);
 
     }
 }
