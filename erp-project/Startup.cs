@@ -35,13 +35,13 @@ namespace erp_project
             services.Configure<ForwardedHeadersOptions>(options => { options.KnownProxies.Add(IPAddress.Parse("10.0.0.100")); });
             services.Configure<FormOptions>(options =>
             {
-                options.MultipartBodyLengthLimit = int.MaxValue;
-                options.ValueLengthLimit = int.MaxValue;
-                options.MultipartHeadersLengthLimit = int.MaxValue;
+                options.MultipartBodyLengthLimit = 209715200;
+                options.ValueLengthLimit = 209715200;
+                options.MultipartHeadersLengthLimit = 209715200;
             }); 
             services.Configure<IISServerOptions>(options =>
             {
-                options.MaxRequestBodySize = null; // Limit on request body size
+                options.MaxRequestBodySize = null;
             });
             services.Configure<ApiBehaviorOptions>(options =>
             {
@@ -56,7 +56,7 @@ namespace erp_project
                .WithMethods("GET", "POST", "PUT", "DELETE", "OPTION")
                .AllowAnyHeader()
                .AllowCredentials());
-
+            
             if (IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

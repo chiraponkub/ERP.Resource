@@ -50,7 +50,6 @@ namespace erp_project.Controllers
         /// <param name="file">ชื่อรูป</param>
         /// <returns></returns>
         [HttpDelete]
-        [RequestSizeLimit(100_000_000)]
         [Route("RemoveImage")]
         public ActionResult RemoveImage(List<string> file)
         {
@@ -74,8 +73,8 @@ namespace erp_project.Controllers
         /// <param name="file">ไฟล์รูปภาพที่อัพโหลด</param>
         /// <param name="SetPath">ที่เก็บไฟล์</param>
         /// <returns></returns>
-        [DisableRequestSizeLimit]
         [HttpPost]
+        [RequestSizeLimit(209715200)]
         [Route("Uploadimg")]
         public ActionResult<m_uploadimage> Uploadimage(List<IFormFile> file, string SetPath)
         {
@@ -106,14 +105,12 @@ namespace erp_project.Controllers
 
         }
 
-
         /// <summary>
         /// อัพโหลดไฟล์
         /// </summary>
         /// <param name="file">ไฟล์ที่อัพโหลด</param>
         /// <param name="SetPath">ที่เก็บไฟล์</param>
         /// <returns></returns>
-        [DisableRequestSizeLimit]
         [HttpPost]
         [Route("Uploadfile")]
         public ActionResult<m_uploadfile> Uploadfile(List<IFormFile> file, string SetPath)
@@ -123,11 +120,11 @@ namespace erp_project.Controllers
                 Guid req = Guid.NewGuid();
                 if (SetPath != null && file.Count() == 0)
                 {
-                    return BadRequest("The image is not uploaded.");
+                    return BadRequest("The File is not uploaded.");
                 }
                 if (file.Count() == 0 && SetPath == null)
                 {
-                    return BadRequest("The image is not uploaded.");
+                    return BadRequest("The File is not uploaded.");
                 }
                 if (SetPath == null)
                 {
