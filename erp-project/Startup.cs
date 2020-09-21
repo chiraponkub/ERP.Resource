@@ -33,6 +33,16 @@ namespace erp_project
             services.AddAuthenticationHelper();
             services.AddSwaggerGenHelper(Configuration);
             services.Configure<ForwardedHeadersOptions>(options => { options.KnownProxies.Add(IPAddress.Parse("10.0.0.100")); });
+            services.Configure<FormOptions>(options =>
+            {
+                options.MultipartBodyLengthLimit = int.MaxValue;
+                options.ValueLengthLimit = int.MaxValue;
+                options.MultipartHeadersLengthLimit = int.MaxValue;
+            }); 
+            services.Configure<IISServerOptions>(options =>
+            {
+                options.MaxRequestBodySize = null; // Limit on request body size
+            });
             services.Configure<ApiBehaviorOptions>(options =>
             {
                 options.SuppressModelStateInvalidFilter = true;

@@ -74,8 +74,8 @@ namespace erp_project.Controllers
         /// <param name="file">ไฟล์รูปภาพที่อัพโหลด</param>
         /// <param name="SetPath">ที่เก็บไฟล์</param>
         /// <returns></returns>
+        [DisableRequestSizeLimit]
         [HttpPost]
-        [RequestSizeLimit(100_000_000)]
         [Route("Uploadimg")]
         public ActionResult<m_uploadimage> Uploadimage(List<IFormFile> file, string SetPath)
         {
@@ -113,6 +113,7 @@ namespace erp_project.Controllers
         /// <param name="file">ไฟล์ที่อัพโหลด</param>
         /// <param name="SetPath">ที่เก็บไฟล์</param>
         /// <returns></returns>
+        [DisableRequestSizeLimit]
         [HttpPost]
         [Route("Uploadfile")]
         public ActionResult<m_uploadfile> Uploadfile(List<IFormFile> file, string SetPath)

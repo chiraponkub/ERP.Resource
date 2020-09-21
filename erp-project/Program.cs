@@ -14,7 +14,14 @@ namespace erp_project
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.UseStartup<Startup>();
+                    webBuilder
+                    .UseStartup<Startup>()
+                    .ConfigureKestrel((context, options) =>
+                    {
+                        // Handle requests up to MaxValue
+                        options.Limits.MaxRequestBodySize = long.MaxValue;
+                    })
+                    .UseIISIntegration();
                 });
     }
 }
