@@ -338,7 +338,7 @@ namespace erp_project.Libraries.Concretes
                         NewImageName = NewName,
                         Path = folderName.Contains("Resources/") ? SetPath : "",
                         fullPath = PathToSaveDb,
-                        size = list
+                        sizes = list
                     });
                 }
                 return res;

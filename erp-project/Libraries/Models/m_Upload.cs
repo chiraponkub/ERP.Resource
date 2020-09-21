@@ -32,7 +32,7 @@ namespace erp_project.Libraries.Models
             /// <summary>
             /// ขนาดต่างๆ ของรูปภาพ
             /// </summary>
-            public List<string> size { get; set; }
+            public List<string> sizes { get; set; }
         }
 
         public class list_images
