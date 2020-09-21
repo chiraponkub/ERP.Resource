@@ -36,12 +36,6 @@ namespace erp_project
             services.Configure<FormOptions>(options =>
             {
                 options.MultipartBodyLengthLimit = 209715200;
-                options.ValueLengthLimit = 209715200;
-                options.MultipartHeadersLengthLimit = 209715200;
-            }); 
-            services.Configure<IISServerOptions>(options =>
-            {
-                options.MaxRequestBodySize = null;
             });
             services.Configure<ApiBehaviorOptions>(options =>
             {
@@ -62,6 +56,7 @@ namespace erp_project
                 app.UseDeveloperExceptionPage();
                 app.UseSwaggerHelper();
             }
+
             app.UseMiddleware<ExceptionMiddleware>();
             app.UseRouting();
             app.UseForwardedHeaders(new ForwardedHeadersOptions { ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto });

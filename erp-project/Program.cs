@@ -18,10 +18,9 @@ namespace erp_project
                     .UseStartup<Startup>()
                     .ConfigureKestrel((context, options) =>
                     {
-                        // Handle requests up to MaxValue
+                        // Handle requests up to 200 MB
                         options.Limits.MaxRequestBodySize = 209715200;
-                    })
-                    .UseIISIntegration();
+                    });
                 });
     }
 }
