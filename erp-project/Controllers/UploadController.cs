@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using erp_project.Entities;
 using erp_project.Libraries.Abstracts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -15,11 +16,14 @@ namespace erp_project.Controllers
     public class UploadController : ERPControllerBase
     {
         private readonly IUpload Upload;
+        private readonly DBConnect db;
 
-        public UploadController(IUpload _upload)
+        public UploadController(IUpload _upload, DBConnect db)
         {
             Upload = _upload;
+            this.db = db;
         }
+
 
         /// <summary>
         /// ลบไฟล์
@@ -34,8 +38,12 @@ namespace erp_project.Controllers
             {
                 if (file == null)
                 {
-                    return BadRequest("File not selected.");
+                    return BadRequest("The picture is not specified.");
                 }
+                //if (db.Upload.FirstOrDefault(e => e.Name == null) == null)
+                //{
+                //    return BadRequest("There are no Files to delete.");
+                //}
                 return Ok(Upload.removeFiles(file));
             }
             catch (Exception ex)
@@ -57,8 +65,12 @@ namespace erp_project.Controllers
             {
                 if (file == null)
                 {
-                    return BadRequest("Image not selected.");
+                    return BadRequest("The picture is not specified.");
                 }
+                //if (db.Upload.FirstOrDefault(e => e.Name == null) == null)
+                //{
+                //    return BadRequest("There are no Images to delete.");
+                //}
                 return Ok(Upload.removeImage(file));
             }
             catch (Exception ex)
@@ -74,7 +86,6 @@ namespace erp_project.Controllers
         /// <param name="SetPath">ที่เก็บไฟล์</param>
         /// <returns></returns>
         [HttpPost]
-        [RequestSizeLimit(209715200)]
         [Route("Uploadimg")]
         public ActionResult<m_uploadimage> Uploadimage(List<IFormFile> file, string SetPath)
         {
