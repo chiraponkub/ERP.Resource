@@ -11,6 +11,8 @@ using System.Linq;
 using Microsoft.AspNetCore.HttpOverrides;
 using System.Net;
 using Microsoft.AspNetCore.Http.Features;
+using Microsoft.Extensions.FileProviders;
+using System.IO;
 
 namespace erp_project
 {
@@ -43,14 +45,14 @@ namespace erp_project
             });
         }
 
-        public void Configure(IApplicationBuilder app)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             app.UseCors(builder => builder
                .WithOrigins(Configuration.GetValue<string>("ApiUrls:OriginURL", "").Split(",").Select(m => m.Trim()).ToArray())
                .WithMethods("GET", "POST", "PUT", "DELETE", "OPTION")
                .AllowAnyHeader()
                .AllowCredentials());
-            
+
             if (IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -59,6 +61,13 @@ namespace erp_project
 
             app.UseMiddleware<ExceptionMiddleware>();
             app.UseRouting();
+
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                FileProvider = new PhysicalFileProvider(
+                Path.Combine(env.ContentRootPath, "wwwroot"))
+            });
+
             app.UseForwardedHeaders(new ForwardedHeadersOptions { ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto });
             app.UseAuthentication();
             app.UseAuthorization();
