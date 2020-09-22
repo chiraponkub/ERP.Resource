@@ -341,3 +341,4 @@ healthchecksdb
 
 # Docker Database Volumn
 **/MsSQLData/
+wwwroot
