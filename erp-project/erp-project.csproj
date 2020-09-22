@@ -26,7 +26,6 @@
 
   <ItemGroup>
     <Folder Include="Entities\Tables\" />
-    <Folder Include="wwwroot\" />
   </ItemGroup>
 
 </Project>

@@ -43,7 +43,6 @@ namespace erp_project
             {
                 options.SuppressModelStateInvalidFilter = true;
             });
-            services.AddDirectoryBrowser();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -69,11 +68,11 @@ namespace erp_project
                 Path.Combine(env.ContentRootPath, "wwwroot"))
             });
 
-            app.UseDirectoryBrowser(new DirectoryBrowserOptions
-            {
-                FileProvider = new PhysicalFileProvider(
-            Path.Combine(env.WebRootPath))
-            });
+            //app.UseDirectoryBrowser(new DirectoryBrowserOptions
+            //{
+            //    FileProvider = new PhysicalFileProvider(
+            //Path.Combine(env.WebRootPath))
+            //});
 
 
             app.UseForwardedHeaders(new ForwardedHeadersOptions { ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto });
