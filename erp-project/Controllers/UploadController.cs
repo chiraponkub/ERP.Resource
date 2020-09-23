@@ -24,54 +24,17 @@ namespace erp_project.Controllers
             this.db = db;
         }
 
-
         /// <summary>
-        /// ลบไฟล์
+        /// แสดงข้อมูล
         /// </summary>
-        /// <param name="file">ชื่อไฟล์</param>
         /// <returns></returns>
-        [HttpDelete]
-        [Route("RemoveFile")]
-        public ActionResult RemoveFile(List<string> file)
+        [HttpGet]
+        [Route("GetFile")]
+        public IActionResult Get()
         {
             try
             {
-                if (file == null)
-                {
-                    return BadRequest("The picture is not specified.");
-                }
-                //if (db.Upload.FirstOrDefault(e => e.Name == null) == null)
-                //{
-                //    return BadRequest("There are no Files to delete.");
-                //}
-                return Ok(Upload.removeFiles(file));
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-
-        /// <summary>
-        /// ลบรูป
-        /// </summary>
-        /// <param name="file">ชื่อรูป</param>
-        /// <returns></returns>
-        [HttpDelete]
-        [Route("RemoveImage")]
-        public ActionResult RemoveImage(List<string> file)
-        {
-            try
-            {
-                if (file == null)
-                {
-                    return BadRequest("The picture is not specified.");
-                }
-                //if (db.Upload.FirstOrDefault(e => e.Name == null) == null)
-                //{
-                //    return BadRequest("There are no Images to delete.");
-                //}
-                return Ok(Upload.removeImage(file));
+                return Ok(Upload.Get());
             }
             catch (Exception ex)
             {
@@ -117,6 +80,29 @@ namespace erp_project.Controllers
         }
 
         /// <summary>
+        /// ลบรูป
+        /// </summary>
+        /// <param name="file">ชื่อรูป</param>
+        /// <returns></returns>
+        [HttpDelete]
+        [Route("RemoveImage")]
+        public ActionResult RemoveImage(List<string> file)
+        {
+            try
+            {
+                if (file == null)
+                {
+                    return BadRequest("The picture is not specified.");
+                }
+                return Ok(Upload.removeImage(file));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        /// <summary>
         /// อัพโหลดไฟล์
         /// </summary>
         /// <param name="file">ไฟล์ที่อัพโหลด</param>
@@ -152,9 +138,30 @@ namespace erp_project.Controllers
             }
         }
 
+        /// <summary>
+        /// ลบไฟล์
+        /// </summary>
+        /// <param name="file">ชื่อไฟล์</param>
+        /// <returns></returns>
+        [HttpDelete]
+        [Route("RemoveFile")]
+        public ActionResult RemoveFile(List<string> file)
+        {
+            try
+            {
+                if (file == null)
+                {
+                    return BadRequest("The picture is not specified.");
+                }
+                return Ok(Upload.removeFiles(file));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
 
-
-
+        
 
     }
 }

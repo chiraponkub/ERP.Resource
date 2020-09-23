@@ -40,27 +40,21 @@ namespace erp_project.Libraries.Models
             public List<string> size { get; set; }
         }
 
-        public class m_removeImage
+        public class m_getupload 
         {
             /// <summary>
             /// ชื่อไฟล์
             /// </summary>
-            public string NameFile { get; set; }
-
+            public string fileName { get; set; }
             /// <summary>
-            /// ที่เก็บไฟล์
+            /// รูปภาพ
             /// </summary>
-            public string Path { get; set; }
-
-            /// <summary>
-            /// ที่เก็บไฟล์พร้อมชื่อไฟล์
-            /// </summary>
-            public string FullPath { get; set; }
+            public string fullPath { get; set; }
 
             /// <summary>
             /// ชนิดของไฟล์
             /// </summary>
-            public string Type { get; set; }
+            public string type { get; set; }
         }
 
         public class m_uploadfile
