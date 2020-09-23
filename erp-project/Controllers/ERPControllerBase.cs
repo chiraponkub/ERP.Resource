@@ -44,8 +44,8 @@ namespace erp_project.Controllers
             JwtService = new JwtSecurityService();
             hashService = new HashSerucityService();
             var configurationBuilder = new ConfigurationBuilder();
-            configurationBuilder.AddJsonFile("appsettings.json", false);
-            configurationBuilder.AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}.json", true, true);
+            configurationBuilder.AddJsonFile("appsettings.json", optional: true, reloadOnChange: false);
+            configurationBuilder.AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}.json", optional: true, reloadOnChange: false);
             configurationBuilder.AddEnvironmentVariables();
             Configuration = configurationBuilder.Build();
         }
