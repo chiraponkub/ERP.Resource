@@ -17,5 +17,8 @@ namespace erp_project.Libraries.Abstracts
         object removeFiles(List<string> files);
         object removeImage(List<string> files);
 
+        //Get
+        List<m_getupload> Get();
+
     }
 }

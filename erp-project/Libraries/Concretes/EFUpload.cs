@@ -380,6 +380,15 @@ namespace erp_project.Libraries.Concretes
             }
         }
 
-
+        public List<m_getupload> Get()
+        {
+            var sql = db.Upload.Select(e => new m_getupload 
+            {
+                fileName = e.Name,
+                fullPath = e.FullPath,
+                type = e.Type
+            }).ToList();
+            return sql;
+        }
     }
 }
