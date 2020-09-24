@@ -10,8 +10,8 @@ namespace erp_project.Libraries.Abstracts
     public interface IUpload
     {
         // upload
-        List<m_uploadfile> UploadFile(List<IFormFile> files, Guid id, string SetPath);
-        List<m_uploadimage> Uploadimage(List<IFormFile> files, Guid id, string SetPath);
+        List<m_uploadfile> UploadFile(List<IFormFile> files,string UserLoginId, string SetPath);
+        List<m_uploadimage> Uploadimage(List<IFormFile> files,string UserLoginId, string SetPath);
 
         //remove
         object removeFiles(List<string> files);
