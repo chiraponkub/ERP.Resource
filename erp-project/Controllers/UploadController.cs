@@ -28,6 +28,7 @@ namespace erp_project.Controllers
         /// แสดงข้อมูล
         /// </summary>
         /// <returns></returns>
+        [Authorize]
         [HttpGet]
         [Route("GetFile")]
         public IActionResult Get()
@@ -48,13 +49,14 @@ namespace erp_project.Controllers
         /// <param name="file">ไฟล์รูปภาพที่อัพโหลด</param>
         /// <param name="SetPath">ที่เก็บไฟล์</param>
         /// <returns></returns>
+        [Authorize]
         [HttpPost]
         [Route("Uploadimg")]
         public ActionResult<m_uploadimage> Uploadimage(List<IFormFile> file, string SetPath)
         {
             try
             {
-                Guid req = Guid.NewGuid();
+                var userid = UserLoginId;
                 if (SetPath != null && file.Count() == 0)
                 {
                     return BadRequest("The image is not uploaded.");
@@ -65,11 +67,11 @@ namespace erp_project.Controllers
                 }
                 if (SetPath == null)
                 {
-                    return Ok(Upload.Uploadimage(file, req, SetPath = null));
+                    return Ok(Upload.Uploadimage(file, userid, SetPath = null));
                 }
                 else
                 {
-                    return Ok(Upload.Uploadimage(file, req, SetPath));
+                    return Ok(Upload.Uploadimage(file, userid, SetPath));
                 }
             }
             catch (Exception ex)
@@ -84,6 +86,7 @@ namespace erp_project.Controllers
         /// </summary>
         /// <param name="file">ชื่อรูป</param>
         /// <returns></returns>
+        [Authorize]
         [HttpDelete]
         [Route("RemoveImage")]
         public ActionResult RemoveImage(List<string> file)
@@ -108,13 +111,14 @@ namespace erp_project.Controllers
         /// <param name="file">ไฟล์ที่อัพโหลด</param>
         /// <param name="SetPath">ที่เก็บไฟล์</param>
         /// <returns></returns>
+        [Authorize]
         [HttpPost]
         [Route("Uploadfile")]
         public ActionResult<m_uploadfile> Uploadfile(List<IFormFile> file, string SetPath)
         {
             try
             {
-                Guid req = Guid.NewGuid();
+                var userid = UserLoginId;
                 if (SetPath != null && file.Count() == 0)
                 {
                     return BadRequest("The File is not uploaded.");
@@ -125,11 +129,11 @@ namespace erp_project.Controllers
                 }
                 if (SetPath == null)
                 {
-                    return Ok(Upload.UploadFile(file, req, SetPath = null));
+                    return Ok(Upload.UploadFile(file, userid, SetPath = null));
                 }
                 else
                 {
-                    return Ok(Upload.UploadFile(file, req, SetPath));
+                    return Ok(Upload.UploadFile(file, userid, SetPath));
                 }
             }
             catch (Exception ex)
@@ -143,6 +147,7 @@ namespace erp_project.Controllers
         /// </summary>
         /// <param name="file">ชื่อไฟล์</param>
         /// <returns></returns>
+        [Authorize]
         [HttpDelete]
         [Route("RemoveFile")]
         public ActionResult RemoveFile(List<string> file)

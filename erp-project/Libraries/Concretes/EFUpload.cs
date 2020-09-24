@@ -22,7 +22,7 @@ namespace erp_project.Libraries.Concretes
             this.db = db;
         }
 
-        public List<m_uploadfile> UploadFile(List<IFormFile> files, Guid id, string SetPath)
+        public List<m_uploadfile> UploadFile(List<IFormFile> files,string userid ,string SetPath)
         {
             try
             {
@@ -52,7 +52,7 @@ namespace erp_project.Libraries.Concretes
                             {
                                 Name = NewName,
                                 Type = ContentType,
-                                UserId = id,
+                                UserId = Guid.Parse(userid),
                                 Path = SetPath,
                                 FullPath = PathToSaveDb,
                                 CreatedAt = DateTime.Now,
@@ -76,7 +76,7 @@ namespace erp_project.Libraries.Concretes
                             {
                                 Name = NewName,
                                 Type = ContentType,
-                                UserId = id,
+                                UserId = Guid.Parse(userid),
                                 Path = "",
                                 FullPath = PathToSaveDb,
                                 CreatedAt = DateTime.Now,
@@ -169,7 +169,7 @@ namespace erp_project.Libraries.Concretes
             return "Deleted successfully.";
         }
 
-        public List<m_uploadimage> Uploadimage(List<IFormFile> files, Guid id, string SetPath)
+        public List<m_uploadimage> Uploadimage(List<IFormFile> files,string userid, string SetPath)
         {
             try
             {
@@ -263,7 +263,7 @@ namespace erp_project.Libraries.Concretes
                         {
                             Name = NewName,
                             Type = ContentType,
-                            UserId = id,
+                            UserId = Guid.Parse(userid),
                             Path = SetPath,
                             FullPath = SaveFullPath,
                             CreatedAt = DateTime.Now,
@@ -341,7 +341,7 @@ namespace erp_project.Libraries.Concretes
                         {
                             Name = NewName,
                             Type = ContentType,
-                            UserId = id,
+                            UserId = Guid.Parse(userid),
                             Path = "",
                             FullPath = filenameLarge,
                             CreatedAt = DateTime.Now,
