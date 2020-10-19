@@ -87,7 +87,7 @@ namespace erp_project.Controllers
         /// <param name="files">ชื่อรูป</param>
         /// <returns></returns>
         [Authorize]
-        [HttpDelete]
+        [HttpPut]
         [Route("RemoveImage")]
         public ActionResult RemoveImage(List<string> files)
         {
@@ -148,7 +148,7 @@ namespace erp_project.Controllers
         /// <param name="files">ชื่อไฟล์</param>
         /// <returns></returns>
         [Authorize]
-        [HttpDelete]
+        [HttpPut]
         [Route("RemoveFile")]
         public ActionResult RemoveFile(List<string> files)
         {

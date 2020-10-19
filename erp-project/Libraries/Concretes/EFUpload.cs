@@ -132,8 +132,9 @@ namespace erp_project.Libraries.Concretes
 
         public object removeImage(List<string> files)
         {
-            foreach (var file in files)
+            foreach (string thisfile in files)
             {
+                string file = thisfile.Split("-").Last().Split(".").First();
 
                 var DB = db.Upload;
                 var sql = DB.FirstOrDefault(e => e.Name == file);
