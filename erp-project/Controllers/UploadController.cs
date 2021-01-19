@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using erp_project.Entities;
 using erp_project.Libraries.Abstracts;
@@ -56,7 +58,11 @@ namespace erp_project.Controllers
         {
             try
             {
+                string[] ssss = { "small-", "medium-", "large-" };
+                string PathToSaveDb;
+
                 var userid = UserLoginId;
+
                 if (SetPath != null && files.Count() == 0)
                 {
                     return BadRequest("The image is not uploaded.");
@@ -67,11 +73,77 @@ namespace erp_project.Controllers
                 }
                 if (SetPath == null)
                 {
-                    return Ok(Upload.Uploadimage(files, userid, SetPath = null));
+                    List<m_uploadimage> res = new List<m_uploadimage>();
+                    foreach (var file in files)
+                    {
+                        string NewName = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds().ToString(); // ตั้งชื่อไฟล์ไหม่
+                        var Splittype = file.FileName.Split(".");  // ดึงค่านามสกุลไฟล์
+                        int Number = Splittype.Count();
+                        int type = Number - 1;
+                        string filenameSmall = "small-" + NewName + "." + Splittype[type].Replace("\\", "/");
+                        string filenameMediun = "medium-" + NewName + "." + Splittype[type].Replace("\\", "/");
+                        string filenameLarge = "large-" + NewName + "." + Splittype[type].Replace("\\", "/");
+                        var list = new List<string> { filenameSmall, filenameMediun, filenameLarge };
+                        string fileName = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.Trim('"'); // ชื่อไฟล์
+                        string folderName = (Path.Combine("wwwroot")).Replace("\\", "/");
+                        if (SetPath == null)
+                        {
+                            PathToSaveDb = filenameLarge;
+                        }
+                        else
+                        {
+                            PathToSaveDb = SetPath + "/" + filenameLarge;
+                        }
+                        res.Add(new m_uploadimage
+                        {
+                            OriginalName = fileName,
+                            NewImageName = NewName + "." + Splittype[type],
+                            Path = folderName.Contains("wwwroot/") ? SetPath : "",
+                            fullPath = PathToSaveDb,
+                            sizes = list
+                        });
+                        //Task.Run(() =>
+                        //{
+                        //    Upload.Uploadimage(file, userid, SetPath = null, NewName);
+                        //});
+                        Upload.Uploadimage(file, userid, SetPath = null, NewName);
+                    }
+                    return Ok(res);
                 }
                 else
                 {
-                    return Ok(Upload.Uploadimage(files, userid, SetPath));
+                    List<m_uploadimage> res = new List<m_uploadimage>();
+                    foreach (var file in files)
+                    {
+                        string NewName = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds().ToString(); // ตั้งชื่อไฟล์ไหม่
+                        var Splittype = file.FileName.Split(".");  // ดึงค่านามสกุลไฟล์
+                        int Number = Splittype.Count();
+                        int type = Number - 1;
+                        string filenameSmall = "small-" + NewName + "." + Splittype[type].Replace("\\", "/");
+                        string filenameMediun = "medium-" + NewName + "." + Splittype[type].Replace("\\", "/");
+                        string filenameLarge = "large-" + NewName + "." + Splittype[type].Replace("\\", "/");
+                        var list = new List<string> { filenameSmall, filenameMediun, filenameLarge };
+                        string fileName = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.Trim('"'); // ชื่อไฟล์
+                        string folderName = (Path.Combine("wwwroot")).Replace("\\", "/");
+                        if (SetPath == null)
+                        {
+                            PathToSaveDb = filenameLarge;
+                        }
+                        else
+                        {
+                            PathToSaveDb = SetPath + "/" + filenameLarge;
+                        }
+                        res.Add(new m_uploadimage
+                        {
+                            OriginalName = fileName,
+                            NewImageName = NewName + "." + Splittype[type],
+                            Path = folderName.Contains("wwwroot/") ? SetPath : "",
+                            fullPath = PathToSaveDb,
+                            sizes = list
+                        });
+                        Upload.Uploadimage(file, userid, SetPath = null, NewName);
+                    }
+                    return Ok(res);
                 }
             }
             catch (Exception ex)
@@ -166,7 +238,7 @@ namespace erp_project.Controllers
             }
         }
 
-        
+
 
     }
 }

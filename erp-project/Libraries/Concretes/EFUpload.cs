@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http.Headers;
+using System.Threading.Tasks;
 using static erp_project.Libraries.Models.m_Upload;
 
 namespace erp_project.Libraries.Concretes
@@ -170,7 +171,7 @@ namespace erp_project.Libraries.Concretes
             return "Deleted successfully.";
         }
 
-        public List<m_uploadimage> Uploadimage(List<IFormFile> files,string userid, string SetPath)
+        public async void Uploadimage(IFormFile file, string userid, string SetPath, string NewName)
         {
             try
             {
@@ -179,7 +180,6 @@ namespace erp_project.Libraries.Concretes
                 string filenameMediun;
                 string filenameLarge;
                 string fullPath;
-                string NewName;
                 string fileName;
                 string pathToSaveSmall;
                 string pathToSaveMediun;
@@ -189,10 +189,10 @@ namespace erp_project.Libraries.Concretes
                 string[] ssss = { "small-", "medium-", "large-" };
 
                 var res = new List<m_uploadimage> { };
-                foreach (var file in files)
-                {
+                //foreach (var file in files)
+                //{
                     fileName = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.Trim('"'); // ชื่อไฟล์
-                    NewName = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds().ToString(); // ตั้งชื่อไฟล์ไหม่
+                    //NewName = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds().ToString(); // ตั้งชื่อไฟล์ไหม่
 
                     var ContentType = file.ContentType; // ดึงค่านามสกุลไฟล์
                     var Splittype = file.FileName.Split(".");  // ดึงค่านามสกุลไฟล์
@@ -352,28 +352,27 @@ namespace erp_project.Libraries.Concretes
                         db.Upload.Add(savefiletodata);
                         db.SaveChanges();
                     }
-                    filenameSmall = "small-" + NewName + "." + Splittype[type].Replace("\\", "/");
-                    filenameMediun = "medium-" + NewName + "." + Splittype[type].Replace("\\", "/");
-                    filenameLarge = "large-" + NewName + "." + Splittype[type].Replace("\\", "/");
-                    var list = new List<string> { filenameSmall, filenameMediun, filenameLarge };
-                    if (SetPath == null)
-                    {
-                        PathToSaveDb = filenameLarge;
-                    }
-                    else
-                    {
-                        PathToSaveDb = SetPath + "/" + filenameLarge;
-                    }
-                    res.Add(new m_uploadimage
-                    {
-                        OriginalName = fileName,
-                        NewImageName = NewName + "." + Splittype[type],
-                        Path = folderName.Contains("wwwroot/") ? SetPath : "",
-                        fullPath = PathToSaveDb,
-                        sizes = list
-                    });
-                }
-                return res;
+                //filenameSmall = "small-" + NewName + "." + Splittype[type].Replace("\\", "/");
+                //filenameMediun = "medium-" + NewName + "." + Splittype[type].Replace("\\", "/");
+                //filenameLarge = "large-" + NewName + "." + Splittype[type].Replace("\\", "/");
+                //var list = new List<string> { filenameSmall, filenameMediun, filenameLarge };
+                //if (SetPath == null)
+                //{
+                //    PathToSaveDb = filenameLarge;
+                //}
+                //else
+                //{
+                //    PathToSaveDb = SetPath + "/" + filenameLarge;
+                //}
+                //res.Add(new m_uploadimage
+                //{
+                //    OriginalName = fileName,
+                //    NewImageName = NewName + "." + Splittype[type],
+                //    Path = folderName.Contains("wwwroot/") ? SetPath : "",
+                //    fullPath = PathToSaveDb,
+                //    sizes = list
+                //});
+                //}
             }
             catch (Exception ex)
             {
