@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using erp_project.Entities;
 using erp_project.Libraries.Abstracts;
+using ImageMagick;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -27,6 +29,60 @@ namespace erp_project.Controllers
         }
 
         /// <summary>
+        /// อัพโหลดไฟล์รูปภาพ
+        /// </summary>
+        /// <param name="files">ไฟล์รูปภาพที่อัพโหลด</param>
+        /// <param name="SetPath">ที่เก็บไฟล์</param>
+        /// <returns></returns>
+        [Authorize]
+        [HttpPost("Uploadimg")]
+        public ActionResult TestUpload(List<IFormFile> files, [FromForm] string SetPath)
+        {
+            if (SetPath != null && files.Count() == 0)
+            {
+                return BadRequest("The image is not uploaded.");
+            }
+            if (files.Count() == 0 && SetPath == null)
+            {
+                return BadRequest("The image is not uploaded.");
+            }
+            var userid = UserLoginId;
+            List<m_uploadimage> res = new List<m_uploadimage>();
+            foreach (var file in files)
+            {
+                string PathToSaveDb;
+                string NewName = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds().ToString(); // ตั้งชื่อไฟล์ไหม่
+                var Splittype = file.FileName.Split(".");  // ดึงค่านามสกุลไฟล์
+                int Number = Splittype.Count();
+                int type = Number - 1;
+                string filenameSmall = "small-" + NewName + "." + Splittype[type].Replace("\\", "/");
+                string filenameMediun = "medium-" + NewName + "." + Splittype[type].Replace("\\", "/");
+                string filenameLarge = "large-" + NewName + "." + Splittype[type].Replace("\\", "/");
+                var list = new List<string> { filenameSmall, filenameMediun, filenameLarge };
+                string fileName = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.Trim('"'); // ชื่อไฟล์
+                string folderName = (Path.Combine("wwwroot")).Replace("\\", "/");
+                if (SetPath == null)
+                {
+                    PathToSaveDb = filenameLarge;
+                }
+                else
+                {
+                    PathToSaveDb = SetPath + "/" + filenameLarge;
+                }
+                res.Add(new m_uploadimage
+                {
+                    OriginalName = fileName,
+                    NewImageName = NewName + "." + Splittype[type],
+                    Path = folderName.Contains("wwwroot/") ? SetPath : "",
+                    fullPath = PathToSaveDb,
+                    sizes = list
+                });
+                Upload.Uploadimage(file, NewName, SetPath, userid);
+            }
+            return Ok(res);
+        }
+
+        /// <summary>
         /// แสดงข้อมูล
         /// </summary>
         /// <returns></returns>
@@ -45,113 +101,101 @@ namespace erp_project.Controllers
             }
         }
 
-        /// <summary>
-        /// อัพโหลดไฟล์รูปภาพ
-        /// </summary>
-        /// <param name="files">ไฟล์รูปภาพที่อัพโหลด</param>
-        /// <param name="SetPath">ที่เก็บไฟล์</param>
-        /// <returns></returns>
-        [Authorize]
-        [HttpPost]
-        [Route("Uploadimg")]
-        public ActionResult<m_uploadimage> Uploadimage(List<IFormFile> files, string SetPath)
-        {
-            try
-            {
-                string[] ssss = { "small-", "medium-", "large-" };
-                string PathToSaveDb;
+        
+        //[Authorize]
+        //[HttpPost]
+        //[Route("Uploadimg")]
+        //public ActionResult<m_uploadimage> Uploadimage(List<IFormFile> files, string SetPath)
+        //{
+        //    try
+        //    {
+        //        string[] ssss = { "small-", "medium-", "large-" };
+        //        string PathToSaveDb;
 
-                var userid = UserLoginId;
+        //        var userid = UserLoginId;
 
-                if (SetPath != null && files.Count() == 0)
-                {
-                    return BadRequest("The image is not uploaded.");
-                }
-                if (files.Count() == 0 && SetPath == null)
-                {
-                    return BadRequest("The image is not uploaded.");
-                }
-                if (SetPath == null)
-                {
-                    List<m_uploadimage> res = new List<m_uploadimage>();
-                    foreach (var file in files)
-                    {
-                        string NewName = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds().ToString(); // ตั้งชื่อไฟล์ไหม่
-                        var Splittype = file.FileName.Split(".");  // ดึงค่านามสกุลไฟล์
-                        int Number = Splittype.Count();
-                        int type = Number - 1;
-                        string filenameSmall = "small-" + NewName + "." + Splittype[type].Replace("\\", "/");
-                        string filenameMediun = "medium-" + NewName + "." + Splittype[type].Replace("\\", "/");
-                        string filenameLarge = "large-" + NewName + "." + Splittype[type].Replace("\\", "/");
-                        var list = new List<string> { filenameSmall, filenameMediun, filenameLarge };
-                        string fileName = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.Trim('"'); // ชื่อไฟล์
-                        string folderName = (Path.Combine("wwwroot")).Replace("\\", "/");
-                        if (SetPath == null)
-                        {
-                            PathToSaveDb = filenameLarge;
-                        }
-                        else
-                        {
-                            PathToSaveDb = SetPath + "/" + filenameLarge;
-                        }
-                        res.Add(new m_uploadimage
-                        {
-                            OriginalName = fileName,
-                            NewImageName = NewName + "." + Splittype[type],
-                            Path = folderName.Contains("wwwroot/") ? SetPath : "",
-                            fullPath = PathToSaveDb,
-                            sizes = list
-                        });
-                        //Task.Run(() =>
-                        //{
-                        //    Upload.Uploadimage(file, userid, SetPath = null, NewName);
-                        //});
-                        Upload.Uploadimage(file, userid, SetPath = null, NewName);
-                    }
-                    return Ok(res);
-                }
-                else
-                {
-                    List<m_uploadimage> res = new List<m_uploadimage>();
-                    foreach (var file in files)
-                    {
-                        string NewName = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds().ToString(); // ตั้งชื่อไฟล์ไหม่
-                        var Splittype = file.FileName.Split(".");  // ดึงค่านามสกุลไฟล์
-                        int Number = Splittype.Count();
-                        int type = Number - 1;
-                        string filenameSmall = "small-" + NewName + "." + Splittype[type].Replace("\\", "/");
-                        string filenameMediun = "medium-" + NewName + "." + Splittype[type].Replace("\\", "/");
-                        string filenameLarge = "large-" + NewName + "." + Splittype[type].Replace("\\", "/");
-                        var list = new List<string> { filenameSmall, filenameMediun, filenameLarge };
-                        string fileName = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.Trim('"'); // ชื่อไฟล์
-                        string folderName = (Path.Combine("wwwroot")).Replace("\\", "/");
-                        if (SetPath == null)
-                        {
-                            PathToSaveDb = filenameLarge;
-                        }
-                        else
-                        {
-                            PathToSaveDb = SetPath + "/" + filenameLarge;
-                        }
-                        res.Add(new m_uploadimage
-                        {
-                            OriginalName = fileName,
-                            NewImageName = NewName + "." + Splittype[type],
-                            Path = folderName.Contains("wwwroot/") ? SetPath : "",
-                            fullPath = PathToSaveDb,
-                            sizes = list
-                        });
-                        Upload.Uploadimage(file, userid, SetPath, NewName);
-                    }
-                    return Ok(res);
-                }
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+                
+        //        if (SetPath == null)
+        //        {
+        //            List<m_uploadimage> res = new List<m_uploadimage>();
+        //            foreach (var file in files)
+        //            {
+        //                string NewName = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds().ToString(); // ตั้งชื่อไฟล์ไหม่
+        //                var Splittype = file.FileName.Split(".");  // ดึงค่านามสกุลไฟล์
+        //                int Number = Splittype.Count();
+        //                int type = Number - 1;
+        //                string filenameSmall = "small-" + NewName + "." + Splittype[type].Replace("\\", "/");
+        //                string filenameMediun = "medium-" + NewName + "." + Splittype[type].Replace("\\", "/");
+        //                string filenameLarge = "large-" + NewName + "." + Splittype[type].Replace("\\", "/");
+        //                var list = new List<string> { filenameSmall, filenameMediun, filenameLarge };
+        //                string fileName = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.Trim('"'); // ชื่อไฟล์
+        //                string folderName = (Path.Combine("wwwroot")).Replace("\\", "/");
+        //                if (SetPath == null)
+        //                {
+        //                    PathToSaveDb = filenameLarge;
+        //                }
+        //                else
+        //                {
+        //                    PathToSaveDb = SetPath + "/" + filenameLarge;
+        //                }
+        //                res.Add(new m_uploadimage
+        //                {
+        //                    OriginalName = fileName,
+        //                    NewImageName = NewName + "." + Splittype[type],
+        //                    Path = folderName.Contains("wwwroot/") ? SetPath : "",
+        //                    fullPath = PathToSaveDb,
+        //                    sizes = list
+        //                });
+        //                //Task.Run(() =>
+        //                //{
+        //                //    Upload.Uploadimage(file, userid, SetPath = null, NewName);
+        //                //});
+        //                Upload.Uploadimage(file, userid, SetPath = null, NewName);
+        //            }
+        //            return Ok(res);
+        //        }
+        //        else
+        //        {
+        //            List<m_uploadimage> res = new List<m_uploadimage>();
+        //            foreach (var file in files)
+        //            {
+        //                string NewName = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds().ToString(); // ตั้งชื่อไฟล์ไหม่
+        //                var Splittype = file.FileName.Split(".");  // ดึงค่านามสกุลไฟล์
+        //                int Number = Splittype.Count();
+        //                int type = Number - 1;
+        //                string filenameSmall = "small-" + NewName + "." + Splittype[type].Replace("\\", "/");
+        //                string filenameMediun = "medium-" + NewName + "." + Splittype[type].Replace("\\", "/");
+        //                string filenameLarge = "large-" + NewName + "." + Splittype[type].Replace("\\", "/");
+        //                var list = new List<string> { filenameSmall, filenameMediun, filenameLarge };
+        //                string fileName = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.Trim('"'); // ชื่อไฟล์
+        //                string folderName = (Path.Combine("wwwroot")).Replace("\\", "/");
+        //                if (SetPath == null)
+        //                {
+        //                    PathToSaveDb = filenameLarge;
+        //                }
+        //                else
+        //                {
+        //                    PathToSaveDb = SetPath + "/" + filenameLarge;
+        //                }
+        //                res.Add(new m_uploadimage
+        //                {
+        //                    OriginalName = fileName,
+        //                    NewImageName = NewName + "." + Splittype[type],
+        //                    Path = folderName.Contains("wwwroot/") ? SetPath : "",
+        //                    fullPath = PathToSaveDb,
+        //                    sizes = list
+        //                });
+        //                Upload.Uploadimage(file, userid, SetPath, NewName);
+        //            }
+        //            return Ok(res);
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return BadRequest(ex.Message);
+        //    }
 
-        }
+        //}
 
         /// <summary>
         /// ลบรูป

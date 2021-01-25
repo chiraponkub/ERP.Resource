@@ -11,7 +11,7 @@ namespace erp_project.Libraries.Abstracts
     {
         // upload
         List<m_uploadfile> UploadFile(List<IFormFile> files,string UserLoginId, string SetPath);
-        void Uploadimage(IFormFile file, string userid, string SetPath, string NewName);
+        void Uploadimage(IFormFile file, string NewName, string SetPath, string userid);
 
         //remove
         object removeFiles(List<string> files);
@@ -20,5 +20,9 @@ namespace erp_project.Libraries.Abstracts
         //Get
         List<m_getupload> Get();
 
+
+        // Test
+        //void TEST(IFormFile file, string NewName, string SetPath, string userid);
+        //void TEST(List<IFormFile> files, string NewName);
     }
 }

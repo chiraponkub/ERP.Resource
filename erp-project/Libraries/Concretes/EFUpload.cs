@@ -1,6 +1,8 @@
 ﻿using erp_project.Entities;
 using erp_project.Entities.Tables;
 using erp_project.Libraries.Abstracts;
+using erp_project.Services.Drawing;
+using ImageMagick;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
@@ -23,7 +25,7 @@ namespace erp_project.Libraries.Concretes
             this.db = db;
         }
 
-        public List<m_uploadfile> UploadFile(List<IFormFile> files,string userid ,string SetPath)
+        public List<m_uploadfile> UploadFile(List<IFormFile> files, string userid, string SetPath)
         {
             try
             {
@@ -139,7 +141,7 @@ namespace erp_project.Libraries.Concretes
 
                 var DB = db.Upload;
                 var sql = DB.FirstOrDefault(e => e.Name == file);
-                
+
                 string deleteSmall;
                 string deleteMediun;
                 string deleteLarge;
@@ -171,218 +173,317 @@ namespace erp_project.Libraries.Concretes
             return "Deleted successfully.";
         }
 
-        public async void Uploadimage(IFormFile file, string userid, string SetPath, string NewName)
+
+        public void Uploadimage(IFormFile file, string NewName, string SetPath, string userid)
         {
-            try
+            string filenameSmall;
+            string filenameMediun;
+            string filenameLarge;
+            string pathToSaveSmall;
+            string pathToSaveMediun;
+            string pathToSaveLarge;
+            //foreach (var file in files)
+            //{
+            string folderName = (Path.Combine("wwwroot")).Replace("\\", "/"); // folder ที่เก็บไฟล์ในโปรเจค 
+            var ContentType = file.ContentType; // ดึงค่านามสกุลไฟล์
+            var Splittype = file.FileName.Split(".");  // ดึงค่านามสกุลไฟล์
+            int Number = Splittype.Count();
+            int type = Number - 1;
+            filenameSmall = "small-" + NewName;
+            filenameMediun = "medium-" + NewName;
+            filenameLarge = "large-" + NewName;
+            pathToSaveSmall = (Directory.CreateDirectory(folderName) + "\\" + filenameSmall + "." + Splittype[type]).Replace("\\", "/"); // ที่บันทึกไฟล์ ที่สามารถตั้งค่าได้
+            pathToSaveMediun = (Directory.CreateDirectory(folderName) + "\\" + filenameMediun + "." + Splittype[type]).Replace("\\", "/"); // ที่บันทึกไฟล์ ที่สามารถตั้งค่าได้
+            pathToSaveLarge = (Directory.CreateDirectory(folderName) + "\\" + filenameLarge + "." + Splittype[type]).Replace("\\", "/"); // ที่บันทึกไฟล์ ที่สามารถตั้งค่าได้
+            using (var stream = file.OpenReadStream())
             {
-                string folderName;
-                string filenameSmall;
-                string filenameMediun;
-                string filenameLarge;
-                string fullPath;
-                string fileName;
-                string pathToSaveSmall;
-                string pathToSaveMediun;
-                string pathToSaveLarge;
-                string PathToSaveDb;
-
-                string[] ssss = { "small-", "medium-", "large-" };
-
-                var res = new List<m_uploadimage> { };
-                //foreach (var file in files)
-                //{
-                    fileName = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.Trim('"'); // ชื่อไฟล์
-                    //NewName = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds().ToString(); // ตั้งชื่อไฟล์ไหม่
-
-                    var ContentType = file.ContentType; // ดึงค่านามสกุลไฟล์
-                    var Splittype = file.FileName.Split(".");  // ดึงค่านามสกุลไฟล์
-                    int Number = Splittype.Count();
-                    int type = Number - 1;
-                    if (SetPath != null)
+                using (var img = Image.FromStream(stream))
+                {
+                    int Width = 1200;
+                    int Height = (Width * img.Size.Height) / img.Size.Width;
+                    Bitmap newImage = new Bitmap(Width, Height);
+                    using (var g = Graphics.FromImage(newImage))
                     {
-                        folderName = (Path.Combine("wwwroot", SetPath)).Replace("\\", "/"); // folder ที่เก็บไฟล์ในโปรเจค 
-                        for (int i = 0; i < 3; i++)
-                        {
-                            filenameSmall = "small-" + NewName;
-                            filenameMediun = "medium-" + NewName;
-                            filenameLarge = "large-" + NewName;
-                            pathToSaveSmall = (Directory.CreateDirectory(folderName) + "\\" + filenameSmall + "." + Splittype[type]).Replace("\\", "/"); // ที่บันทึกไฟล์ ที่สามารถตั้งค่าได้
-                            pathToSaveMediun = (Directory.CreateDirectory(folderName) + "\\" + filenameMediun + "." + Splittype[type]).Replace("\\", "/"); // ที่บันทึกไฟล์ ที่สามารถตั้งค่าได้
-                            pathToSaveLarge = (Directory.CreateDirectory(folderName) + "\\" + filenameLarge + "." + Splittype[type]).Replace("\\", "/"); // ที่บันทึกไฟล์ ที่สามารถตั้งค่าได้
-                            fullPath = folderName + "\\large-" + NewName;
-                            PathToSaveDb = SetPath + "/" + NewName + "." + Splittype[type].Replace("\\", "/");
-                            using (var stream = file.OpenReadStream())
-                            {
-                                using (var img = Image.FromStream(stream))
-                                {
-                                    if (i == 0)
-                                    {
-                                        int Width = 360;
-                                        int Height = (Width * img.Size.Height) / img.Size.Width;
-                                        Bitmap newImage = new Bitmap(Width, Height);
-                                        using (var g = Graphics.FromImage(newImage))
-                                        {
-                                            g.DrawImage(img, 0, 0, Width, Height);
-                                            newImage.Save(pathToSaveSmall);
-                                            g.Dispose();
-                                            newImage.Dispose();
-                                        }
-                                    }
-                                    else if (i == 1)
-                                    {
-                                        int Width = 640;
-                                        int Height = (Width * img.Size.Height) / img.Size.Width;
-                                        Bitmap newImage = new Bitmap(Width, Height);
-                                        using (var g = Graphics.FromImage(newImage))
-                                        {
-                                            g.DrawImage(img, 0, 0, Width, Height);
-                                            newImage.Save(pathToSaveMediun);
-                                            g.Dispose();
-                                            newImage.Dispose();
-                                        }
-                                    }
-                                    else
-                                    {
-                                        int Width = 1200;
-                                        int Height = (Width * img.Size.Height) / img.Size.Width;
-                                        Bitmap newImage = new Bitmap(Width, Height);
-                                        using (var g = Graphics.FromImage(newImage))
-                                        {
-                                            g.DrawImage(img, 0, 0, Width, Height);
-                                            newImage.Save(pathToSaveLarge);
-                                            g.Dispose();
-                                            newImage.Dispose();
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        filenameLarge = "large-" + NewName;
-                        pathToSaveLarge = (Directory.CreateDirectory(folderName) + "\\" + filenameLarge + "." + Splittype[type]).Replace("\\", "/"); // ที่บันทึกไฟล์ ที่สามารถตั้งค่าได้
-                        var SaveFullPath = SetPath + "/" + filenameLarge + "." + Splittype[type];
-                        var savefiletodata1 = new Upload
-                        {
-                            Name = NewName,
-                            Type = ContentType,
-                            UserId = Guid.Parse(userid),
-                            Path = SetPath,
-                            FullPath = SaveFullPath,
-                            CreatedAt = DateTime.Now,
-                            NewName = filenameLarge + "." + Splittype[type],
-                            OriginalName = file.FileName
-                        };
-                        db.Upload.Add(savefiletodata1);
-                        db.SaveChanges();
+                        g.DrawImage(img, 0, 0, Width, Height);
+                        newImage.Save(pathToSaveLarge);
+                        g.Dispose();
+                        newImage.Dispose();
                     }
-                    else
-                    {
-                        for (int i = 0; i < 3; i++)
-                        {
-                            filenameSmall = "small-" + NewName;
-                            filenameMediun = "medium-" + NewName;
-                            filenameLarge = "large-" + NewName;
-                            folderName = Path.Combine("wwwroot"); // folder ที่เก็บไฟล์ในโปรเจค 
-                            pathToSaveSmall = (Directory.CreateDirectory(folderName) + "\\" + filenameSmall + "." + Splittype[type]).Replace("\\", "/"); // ที่บันทึกไฟล์ ที่สามารถตั้งค่าได้
-                            pathToSaveMediun = (Directory.CreateDirectory(folderName) + "\\" + filenameMediun + "." + Splittype[type]).Replace("\\", "/"); // ที่บันทึกไฟล์ ที่สามารถตั้งค่าได้
-                            pathToSaveLarge = (Directory.CreateDirectory(folderName) + "\\" + filenameLarge + "." + Splittype[type]).Replace("\\", "/"); // ที่บันทึกไฟล์ ที่สามารถตั้งค่าได้
-                            fullPath = folderName + "\\large-" + NewName;
-                            PathToSaveDb = SetPath + "/" + NewName + "." + Splittype[type].Replace("\\", "/");
-                            using (var stream = file.OpenReadStream())
-                            {
-                                using (var img = Image.FromStream(stream))
-                                {
-
-                                    if (i == 0)
-                                    {
-                                        int Width = 360;
-                                        int Height = (Width * img.Size.Height) / img.Size.Width;
-                                        Bitmap newImage = new Bitmap(Width, Height);
-                                        using (var g = Graphics.FromImage(newImage))
-                                        {
-                                            g.DrawImage(img, 0, 0, Width, Height);
-                                            newImage.Save(pathToSaveSmall);
-                                            g.Dispose();
-                                            newImage.Dispose();
-                                        }
-                                    }
-                                    else if (i == 1)
-                                    {
-                                        int Width = 640;
-                                        int Height = (Width * img.Size.Height) / img.Size.Width;
-                                        Bitmap newImage = new Bitmap(Width, Height);
-                                        using (var g = Graphics.FromImage(newImage))
-                                        {
-                                            g.DrawImage(img, 0, 0, Width, Height);
-                                            newImage.Save(pathToSaveMediun);
-                                            g.Dispose();
-                                            newImage.Dispose();
-                                        }
-                                    }
-                                    else
-                                    {
-                                        int Width = 1200;
-                                        int Height = (Width * img.Size.Height) / img.Size.Width;
-                                        Bitmap newImage = new Bitmap(Width, Height);
-                                        using (var g = Graphics.FromImage(newImage))
-                                        {
-                                            g.DrawImage(img, 0, 0, Width, Height);
-                                            newImage.Save(pathToSaveLarge);
-                                            g.Dispose();
-                                            newImage.Dispose();
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        filenameLarge = "large-" + NewName + "." + Splittype[type].Replace("\\", "/");
-                        folderName = (Path.Combine("wwwroot")).Replace("\\", "/"); // folder ที่เก็บไฟล์ในโปรเจค 
-                        pathToSaveLarge = (Directory.CreateDirectory(folderName) + "\\" + filenameLarge).Replace("\\", "/"); // ที่บันทึกไฟล์ ที่สามารถตั้งค่าได้
-
-                        var savefiletodata = new Upload
-                        {
-                            Name = NewName,
-                            Type = ContentType,
-                            UserId = Guid.Parse(userid),
-                            Path = "",
-                            FullPath = filenameLarge,
-                            CreatedAt = DateTime.Now,
-                            NewName = filenameLarge,
-                            OriginalName = file.FileName
-                        };
-                        db.Upload.Add(savefiletodata);
-                        db.SaveChanges();
-                    }
-                //filenameSmall = "small-" + NewName + "." + Splittype[type].Replace("\\", "/");
-                //filenameMediun = "medium-" + NewName + "." + Splittype[type].Replace("\\", "/");
-                //filenameLarge = "large-" + NewName + "." + Splittype[type].Replace("\\", "/");
-                //var list = new List<string> { filenameSmall, filenameMediun, filenameLarge };
-                //if (SetPath == null)
-                //{
-                //    PathToSaveDb = filenameLarge;
-                //}
-                //else
-                //{
-                //    PathToSaveDb = SetPath + "/" + filenameLarge;
-                //}
-                //res.Add(new m_uploadimage
-                //{
-                //    OriginalName = fileName,
-                //    NewImageName = NewName + "." + Splittype[type],
-                //    Path = folderName.Contains("wwwroot/") ? SetPath : "",
-                //    fullPath = PathToSaveDb,
-                //    sizes = list
-                //});
-                //}
+                }
             }
-            catch (Exception ex)
+            string[] Pathsave = { pathToSaveSmall, pathToSaveMediun };
+            using (var stream = file.OpenReadStream())
             {
-                throw new Exception(ex.Message);
+                using (var img = Image.FromStream(stream))
+                {
+                    int Width;
+                    int Height;
+                    List<int> Widths = new List<int>();
+                    List<int> Heights = new List<int>();
+                    for (int i = 0; i <= 1; i++)
+                    {
+                        if (i == 0)
+                        {
+                            Width = 360;
+                            Height = (Width * img.Size.Height) / img.Size.Width;
+                            Widths.Add(Width);
+                            Heights.Add(Height);
+                        }
+                        else
+                        {
+                            Width = 640;
+                            Height = (Width * img.Size.Height) / img.Size.Width;
+                            Widths.Add(Width);
+                            Heights.Add(Height);
+                        }
+                    }
+                    Task.Run(() =>
+                    {
+                        File.Copy(Path.Combine(pathToSaveLarge), Path.Combine(pathToSaveSmall));
+                        File.Copy(Path.Combine(pathToSaveLarge), Path.Combine(pathToSaveMediun));
+                        Drawing.Drawigs(Widths, Heights, pathToSaveLarge, Pathsave);
+                    });
+                }
             }
+
+            filenameLarge = "large-" + NewName;
+            pathToSaveLarge = (Directory.CreateDirectory(folderName) + "\\" + filenameLarge + "." + Splittype[type]).Replace("\\", "/"); // ที่บันทึกไฟล์ ที่สามารถตั้งค่าได้
+            string SaveFullPath;
+            if (SetPath == null)
+            {
+                SaveFullPath = filenameLarge + "." + Splittype[type];
+            }
+            else
+            {
+                SaveFullPath = SetPath + "/" + filenameLarge + "." + Splittype[type];
+            }
+            var savefiletodata1 = new Upload
+            {
+                Name = NewName,
+                Type = ContentType,
+                UserId = Guid.Parse(userid),
+                Path = string.IsNullOrEmpty(SetPath) ? "" : SetPath,
+                FullPath = SaveFullPath,
+                CreatedAt = DateTime.Now,
+                NewName = filenameLarge + "." + Splittype[type],
+                OriginalName = file.FileName
+            };
+            db.Upload.Add(savefiletodata1);
+            db.SaveChanges();
         }
+
+        //public void Uploadimage(IFormFile file, string userid, string SetPath, string NewName)
+        //{
+        //    try
+        //    {
+        //        string folderName;
+        //        string filenameSmall;
+        //        string filenameMediun;
+        //        string filenameLarge;
+        //        string fullPath;
+        //        string fileName;
+        //        string pathToSaveSmall;
+        //        string pathToSaveMediun;
+        //        string pathToSaveLarge;
+        //        string PathToSaveDb;
+
+        //        string[] ssss = { "small-", "medium-", "large-" };
+
+        //        var res = new List<m_uploadimage> { };
+        //        //foreach (var file in files)
+        //        //{
+        //        fileName = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.Trim('"'); // ชื่อไฟล์
+        //                                                                                                    //NewName = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds().ToString(); // ตั้งชื่อไฟล์ไหม่
+
+        //        var ContentType = file.ContentType; // ดึงค่านามสกุลไฟล์
+        //        var Splittype = file.FileName.Split(".");  // ดึงค่านามสกุลไฟล์
+        //        int Number = Splittype.Count();
+        //        int type = Number - 1;
+        //        if (SetPath != null)
+        //        {
+        //            folderName = (Path.Combine("wwwroot", SetPath)).Replace("\\", "/"); // folder ที่เก็บไฟล์ในโปรเจค 
+        //            for (int i = 0; i < 3; i++)
+        //            {
+        //                filenameSmall = "small-" + NewName;
+        //                filenameMediun = "medium-" + NewName;
+        //                filenameLarge = "large-" + NewName;
+        //                pathToSaveSmall = (Directory.CreateDirectory(folderName) + "\\" + filenameSmall + "." + Splittype[type]).Replace("\\", "/"); // ที่บันทึกไฟล์ ที่สามารถตั้งค่าได้
+        //                pathToSaveMediun = (Directory.CreateDirectory(folderName) + "\\" + filenameMediun + "." + Splittype[type]).Replace("\\", "/"); // ที่บันทึกไฟล์ ที่สามารถตั้งค่าได้
+        //                pathToSaveLarge = (Directory.CreateDirectory(folderName) + "\\" + filenameLarge + "." + Splittype[type]).Replace("\\", "/"); // ที่บันทึกไฟล์ ที่สามารถตั้งค่าได้
+        //                fullPath = folderName + "\\large-" + NewName;
+        //                PathToSaveDb = SetPath + "/" + NewName + "." + Splittype[type].Replace("\\", "/");
+        //                using (var stream = file.OpenReadStream())
+        //                {
+        //                    using (var img = Image.FromStream(stream))
+        //                    {
+        //                        if (i == 0)
+        //                        {
+        //                            int Width = 360;
+        //                            int Height = (Width * img.Size.Height) / img.Size.Width;
+        //                            Bitmap newImage = new Bitmap(Width, Height);
+        //                            using (var g = Graphics.FromImage(newImage))
+        //                            {
+        //                                g.DrawImage(img, 0, 0, Width, Height);
+        //                                newImage.Save(pathToSaveSmall);
+        //                                g.Dispose();
+        //                                newImage.Dispose();
+        //                            }
+        //                        }
+        //                        else if (i == 1)
+        //                        {
+        //                            int Width = 640;
+        //                            int Height = (Width * img.Size.Height) / img.Size.Width;
+        //                            Bitmap newImage = new Bitmap(Width, Height);
+        //                            using (var g = Graphics.FromImage(newImage))
+        //                            {
+        //                                g.DrawImage(img, 0, 0, Width, Height);
+        //                                newImage.Save(pathToSaveMediun);
+        //                                g.Dispose();
+        //                                newImage.Dispose();
+        //                            }
+        //                        }
+        //                        else
+        //                        {
+        //                            int Width = 1200;
+        //                            int Height = (Width * img.Size.Height) / img.Size.Width;
+        //                            Bitmap newImage = new Bitmap(Width, Height);
+        //                            using (var g = Graphics.FromImage(newImage))
+        //                            {
+        //                                g.DrawImage(img, 0, 0, Width, Height);
+        //                                newImage.Save(pathToSaveLarge);
+        //                                g.Dispose();
+        //                                newImage.Dispose();
+        //                            }
+        //                        }
+        //                    }
+        //                }
+        //            }
+        //            filenameLarge = "large-" + NewName;
+        //            pathToSaveLarge = (Directory.CreateDirectory(folderName) + "\\" + filenameLarge + "." + Splittype[type]).Replace("\\", "/"); // ที่บันทึกไฟล์ ที่สามารถตั้งค่าได้
+        //            var SaveFullPath = SetPath + "/" + filenameLarge + "." + Splittype[type];
+        //            var savefiletodata1 = new Upload
+        //            {
+        //                Name = NewName,
+        //                Type = ContentType,
+        //                UserId = Guid.Parse(userid),
+        //                Path = SetPath,
+        //                FullPath = SaveFullPath,
+        //                CreatedAt = DateTime.Now,
+        //                NewName = filenameLarge + "." + Splittype[type],
+        //                OriginalName = file.FileName
+        //            };
+        //            db.Upload.Add(savefiletodata1);
+        //            db.SaveChanges();
+        //        }
+        //        else
+        //        {
+        //            for (int i = 0; i < 3; i++)
+        //            {
+        //                filenameSmall = "small-" + NewName;
+        //                filenameMediun = "medium-" + NewName;
+        //                filenameLarge = "large-" + NewName;
+        //                folderName = Path.Combine("wwwroot"); // folder ที่เก็บไฟล์ในโปรเจค 
+        //                pathToSaveSmall = (Directory.CreateDirectory(folderName) + "\\" + filenameSmall + "." + Splittype[type]).Replace("\\", "/"); // ที่บันทึกไฟล์ ที่สามารถตั้งค่าได้
+        //                pathToSaveMediun = (Directory.CreateDirectory(folderName) + "\\" + filenameMediun + "." + Splittype[type]).Replace("\\", "/"); // ที่บันทึกไฟล์ ที่สามารถตั้งค่าได้
+        //                pathToSaveLarge = (Directory.CreateDirectory(folderName) + "\\" + filenameLarge + "." + Splittype[type]).Replace("\\", "/"); // ที่บันทึกไฟล์ ที่สามารถตั้งค่าได้
+        //                fullPath = folderName + "\\large-" + NewName;
+        //                PathToSaveDb = SetPath + "/" + NewName + "." + Splittype[type].Replace("\\", "/");
+        //                using (var stream = file.OpenReadStream())
+        //                {
+        //                    using (var img = Image.FromStream(stream))
+        //                    {
+
+        //                        if (i == 0)
+        //                        {
+        //                            int Width = 360;
+        //                            int Height = (Width * img.Size.Height) / img.Size.Width;
+        //                            Bitmap newImage = new Bitmap(Width, Height);
+        //                            using (var g = Graphics.FromImage(newImage))
+        //                            {
+        //                                g.DrawImage(img, 0, 0, Width, Height);
+        //                                newImage.Save(pathToSaveSmall);
+        //                                g.Dispose();
+        //                                newImage.Dispose();
+        //                            }
+        //                        }
+        //                        else if (i == 1)
+        //                        {
+        //                            int Width = 640;
+        //                            int Height = (Width * img.Size.Height) / img.Size.Width;
+        //                            Bitmap newImage = new Bitmap(Width, Height);
+        //                            using (var g = Graphics.FromImage(newImage))
+        //                            {
+        //                                g.DrawImage(img, 0, 0, Width, Height);
+        //                                newImage.Save(pathToSaveMediun);
+        //                                g.Dispose();
+        //                                newImage.Dispose();
+        //                            }
+        //                        }
+        //                        else
+        //                        {
+        //                            int Width = 1200;
+        //                            int Height = (Width * img.Size.Height) / img.Size.Width;
+        //                            Bitmap newImage = new Bitmap(Width, Height);
+        //                            using (var g = Graphics.FromImage(newImage))
+        //                            {
+        //                                g.DrawImage(img, 0, 0, Width, Height);
+        //                                newImage.Save(pathToSaveLarge);
+        //                                g.Dispose();
+        //                                newImage.Dispose();
+        //                            }
+        //                        }
+        //                    }
+        //                }
+        //            }
+        //            filenameLarge = "large-" + NewName + "." + Splittype[type].Replace("\\", "/");
+        //            folderName = (Path.Combine("wwwroot")).Replace("\\", "/"); // folder ที่เก็บไฟล์ในโปรเจค 
+        //            pathToSaveLarge = (Directory.CreateDirectory(folderName) + "\\" + filenameLarge).Replace("\\", "/"); // ที่บันทึกไฟล์ ที่สามารถตั้งค่าได้
+
+        //            var savefiletodata = new Upload
+        //            {
+        //                Name = NewName,
+        //                Type = ContentType,
+        //                UserId = Guid.Parse(userid),
+        //                Path = "",
+        //                FullPath = filenameLarge,
+        //                CreatedAt = DateTime.Now,
+        //                NewName = filenameLarge,
+        //                OriginalName = file.FileName
+        //            };
+        //            db.Upload.Add(savefiletodata);
+        //            db.SaveChanges();
+        //        }
+        //        //filenameSmall = "small-" + NewName + "." + Splittype[type].Replace("\\", "/");
+        //        //filenameMediun = "medium-" + NewName + "." + Splittype[type].Replace("\\", "/");
+        //        //filenameLarge = "large-" + NewName + "." + Splittype[type].Replace("\\", "/");
+        //        //var list = new List<string> { filenameSmall, filenameMediun, filenameLarge };
+        //        //if (SetPath == null)
+        //        //{
+        //        //    PathToSaveDb = filenameLarge;
+        //        //}
+        //        //else
+        //        //{
+        //        //    PathToSaveDb = SetPath + "/" + filenameLarge;
+        //        //}
+        //        //res.Add(new m_uploadimage
+        //        //{
+        //        //    OriginalName = fileName,
+        //        //    NewImageName = NewName + "." + Splittype[type],
+        //        //    Path = folderName.Contains("wwwroot/") ? SetPath : "",
+        //        //    fullPath = PathToSaveDb,
+        //        //    sizes = list
+        //        //});
+        //        //}
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw new Exception(ex.Message);
+        //    }
+        //}
 
         public List<m_getupload> Get()
         {
-            var sql = db.Upload.Select(e => new m_getupload 
+            var sql = db.Upload.Select(e => new m_getupload
             {
                 fileName = e.Name,
                 fullPath = e.FullPath,
