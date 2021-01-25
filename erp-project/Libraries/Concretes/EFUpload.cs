@@ -217,7 +217,7 @@ namespace erp_project.Libraries.Concretes
                                 {
                                     if (i == 0)
                                     {
-                                        int Width = 640;
+                                        int Width = 360;
                                         int Height = (Width * img.Size.Height) / img.Size.Width;
                                         Bitmap newImage = new Bitmap(Width, Height);
                                         using (var g = Graphics.FromImage(newImage))
@@ -230,7 +230,7 @@ namespace erp_project.Libraries.Concretes
                                     }
                                     else if (i == 1)
                                     {
-                                        int Width = 1280;
+                                        int Width = 640;
                                         int Height = (Width * img.Size.Height) / img.Size.Width;
                                         Bitmap newImage = new Bitmap(Width, Height);
                                         using (var g = Graphics.FromImage(newImage))
@@ -243,7 +243,7 @@ namespace erp_project.Libraries.Concretes
                                     }
                                     else
                                     {
-                                        int Width = 1920;
+                                        int Width = 1200;
                                         int Height = (Width * img.Size.Height) / img.Size.Width;
                                         Bitmap newImage = new Bitmap(Width, Height);
                                         using (var g = Graphics.FromImage(newImage))
@@ -294,7 +294,7 @@ namespace erp_project.Libraries.Concretes
 
                                     if (i == 0)
                                     {
-                                        int Width = 640;
+                                        int Width = 360;
                                         int Height = (Width * img.Size.Height) / img.Size.Width;
                                         Bitmap newImage = new Bitmap(Width, Height);
                                         using (var g = Graphics.FromImage(newImage))
@@ -307,7 +307,7 @@ namespace erp_project.Libraries.Concretes
                                     }
                                     else if (i == 1)
                                     {
-                                        int Width = 1280;
+                                        int Width = 640;
                                         int Height = (Width * img.Size.Height) / img.Size.Width;
                                         Bitmap newImage = new Bitmap(Width, Height);
                                         using (var g = Graphics.FromImage(newImage))
@@ -320,7 +320,7 @@ namespace erp_project.Libraries.Concretes
                                     }
                                     else
                                     {
-                                        int Width = 1920;
+                                        int Width = 1200;
                                         int Height = (Width * img.Size.Height) / img.Size.Width;
                                         Bitmap newImage = new Bitmap(Width, Height);
                                         using (var g = Graphics.FromImage(newImage))

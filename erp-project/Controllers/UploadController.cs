@@ -141,7 +141,7 @@ namespace erp_project.Controllers
                             fullPath = PathToSaveDb,
                             sizes = list
                         });
-                        Upload.Uploadimage(file, userid, SetPath = null, NewName);
+                        Upload.Uploadimage(file, userid, SetPath, NewName);
                     }
                     return Ok(res);
                 }
