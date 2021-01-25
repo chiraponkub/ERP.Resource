@@ -199,8 +199,11 @@ namespace erp_project.Libraries.Concretes
             {
                 using (var img = Image.FromStream(stream))
                 {
-                    int Width = 1200;
-                    int Height = (Width * img.Size.Height) / img.Size.Width;
+                    int Width;
+                    int Height;
+                    string[] Pathsave = { pathToSaveSmall, pathToSaveMediun };
+                    Width = 1200;
+                    Height = (Width * img.Size.Height) / img.Size.Width;
                     Bitmap newImage = new Bitmap(Width, Height);
                     using (var g = Graphics.FromImage(newImage))
                     {
@@ -208,41 +211,39 @@ namespace erp_project.Libraries.Concretes
                         newImage.Save(pathToSaveLarge);
                         g.Dispose();
                         newImage.Dispose();
+                        List<int> Widths = new List<int>();
+                        List<int> Heights = new List<int>();
+                        for (int i = 0; i <= 1; i++)
+                        {
+                            if (i == 0)
+                            {
+                                Width = 360;
+                                Height = (Width * img.Size.Height) / img.Size.Width;
+                                Widths.Add(Width);
+                                Heights.Add(Height);
+                            }
+                            else
+                            {
+                                Width = 640;
+                                Height = (Width * img.Size.Height) / img.Size.Width;
+                                Widths.Add(Width);
+                                Heights.Add(Height);
+                            }
+                        }
+                        Task.Run(() =>
+                        {
+                            File.Copy(Path.Combine(pathToSaveLarge), Path.Combine(pathToSaveSmall));
+                            File.Copy(Path.Combine(pathToSaveLarge), Path.Combine(pathToSaveMediun));
+                            Drawing.Drawigs(Widths, Heights, pathToSaveLarge, Pathsave);
+                        });
                     }
                 }
             }
-            string[] Pathsave = { pathToSaveSmall, pathToSaveMediun };
             using (var stream = file.OpenReadStream())
             {
                 using (var img = Image.FromStream(stream))
                 {
-                    int Width;
-                    int Height;
-                    List<int> Widths = new List<int>();
-                    List<int> Heights = new List<int>();
-                    for (int i = 0; i <= 1; i++)
-                    {
-                        if (i == 0)
-                        {
-                            Width = 360;
-                            Height = (Width * img.Size.Height) / img.Size.Width;
-                            Widths.Add(Width);
-                            Heights.Add(Height);
-                        }
-                        else
-                        {
-                            Width = 640;
-                            Height = (Width * img.Size.Height) / img.Size.Width;
-                            Widths.Add(Width);
-                            Heights.Add(Height);
-                        }
-                    }
-                    Task.Run(() =>
-                    {
-                        File.Copy(Path.Combine(pathToSaveLarge), Path.Combine(pathToSaveSmall));
-                        File.Copy(Path.Combine(pathToSaveLarge), Path.Combine(pathToSaveMediun));
-                        Drawing.Drawigs(Widths, Heights, pathToSaveLarge, Pathsave);
-                    });
+                    
                 }
             }
 
