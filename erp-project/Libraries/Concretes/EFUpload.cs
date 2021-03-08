@@ -29,6 +29,7 @@ namespace erp_project.Libraries.Concretes
         {
             try
             {
+                
                 var res = new List<m_uploadfile> { };
                 foreach (var file in files)
                 {
@@ -41,7 +42,7 @@ namespace erp_project.Libraries.Concretes
                     var Splittype = file.FileName.Split(".");  // ดึงค่านามสกุลไฟล์
                     int Number = Splittype.Count();
                     int type = Number - 1;
-
+                    long FileSize =  file.Length;
                     if (SetPath != null)
                     {
                         folderName = (Path.Combine("wwwroot", SetPath)).Replace("\\", "/");
@@ -96,7 +97,8 @@ namespace erp_project.Libraries.Concretes
                         NewFilename = NewName + "." + Splittype[type],
                         Path = folderName.Contains("wwwroot/") ? SetPath : "",
                         FullPath = PathToSaveDb,
-                        Type = ContentType
+                        Type = ContentType,
+                        FileSize = FileSize
                     });
                 }
                 return res;

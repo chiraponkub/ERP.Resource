@@ -83,6 +83,8 @@ namespace erp_project.Libraries.Models
             /// ชนิดของไฟล์
             /// </summary>
             public string Type { get; set; }
+
+            public long FileSize { get; set; }
         }
     }
 }
